@@ -7,11 +7,5 @@
 學號:B06208003<br />
 學系:地理環境資源學系<br />
 ## Schedule
-### 第一周
-#### 在課堂上
-1. 看如何建立github desktop<br />
-2. 看如何建立md檔案在github<br />
-3. 下載github<br />
-4. 建立一個repository和一個md檔案<br />
-#### 在家裡
-1. 閱讀
+### WEEK1
+[第一周](https://github.com/icedragon5235/ntu-cs-x/blob/master/week1/README.md)
