@@ -7,9 +7,9 @@
 ## Schedule
 ### 第一周
 #### 在課堂上
-1.看如何建立github desktop<br />
-2.看如何建立md檔案在github<br />
-3.下載github<br />
-4.建立一個repository和一個md檔案<br />
+1. 看如何建立github desktop<br />
+2. 看如何建立md檔案在github<br />
+3. 下載github<br />
+4. 建立一個repository和一個md檔案<br />
 #### 在家裡
-1.
+1. 閱讀
