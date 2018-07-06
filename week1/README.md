@@ -12,4 +12,4 @@
 3. 玩datacamp的r基本教學六大關
 
 
-https://icedragon5235.github.io/ntu-cs-x/week1/test.html
+[課堂成果](https://icedragon5235.github.io/ntu-cs-x/week1/test.html)
