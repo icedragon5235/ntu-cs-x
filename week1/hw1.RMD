@@ -1,10 +1,10 @@
 # HW1
-### ���R��
-### 2018�~7��6��
-# ����
-�o���u�O�Ĥ@�P�@�~�A��O�@���ǲߵ��O
-## �B��
-### �|�h�B��
+### 廖昱嘉
+### 2018年7月6日
+# 介紹
+這不只是第一周作業，更是一份學習筆記
+## 運算
+### 四則運算
 ```{r}
 66+666
 ```
@@ -20,41 +20,41 @@
 ```{r}
 9%%5
 ```
-## �ܼ�
-### �ܼƦ��|��:�ƭȡA��ơA�޿�ȡA��r
-### �i�H�Ψ��class()���ˬd���ܼƪ�����
+## 變數
+### 變數有四種:數值，整數，邏輯值，文字
+### 可以用函數class()來檢查此變數的種類
 ```{r}
 apple<-5
 ```
 ```{r}
 class(apple)
 ```
-### �Ъ`�N�A���P�������ܼƤ���ۥ[
+### 請注意，不同種類的變數不能相加
 ```{r}
-banana<-"�n�Y"
+banana<-"好吃"
 ```
-#### banana����+apple�A�]���@�ӬO�r��@�ӬO�ƭ�
-## �V�q
-### �ϥ�c()�ӳгy�V�q�A�èϥγr�����j�V�q���������A��p:
+#### banana不能+apple，因為一個是字串一個是數值
+## 向量
+### 使用c()來創造向量，並使用逗號分隔向量中的元素，比如:
 ```{r}
 sisters<-c(6,8,10)
 ```
 ```{r}
 fruit<-c("watermelon","pineapple","orange")
 ```
-### ��names()�Ӭ��V�q�R�W�A�ϸ�Ƨ�[�@���A�M
+### 用names()來為向量命名，使資料更加一目瞭然
 ```{r}
-names(sisters)<-c("�p��","�p��","�p�~�G")
+names(sisters)<-c("小花","小美","小芒果")
 ```
 ```{r}
 sisters
 ```
-### �V�q�̪������p�G�ۦP�A�]�O�i�H�ۥ[����!
-### ���]�p�D(pon)���������B�x���B�����`�@(6,6,6)
+### 向量裡的種類如果相同，也是可以相加的唷!
+### 假設小胖(pon)有的美金、台幣、黃金總共(6,6,6)
 ```{r}
 pon<-c(6,6,6)
 ```
-### �p��(mei)�O(8,8,12)
+### 小美(mei)是(8,8,12)
 ```{r}
 mei<-c(8,8,12)
 ```
@@ -64,72 +64,72 @@ total<-pon+mei
 ```{r}
 total
 ```
-### �ڭ̥i�H��sum()�o��ƨӬۥ[�V�q���Ҧ��F��
+### 我們可以用sum()這函數來相加向量內所有東西
 ```{r}
 sum(mei)
 ```
-### ���]��V�q�Ҧ��������@�ˡA�����S�@�ˡA�N�i�H���!
+### 假設兩向量所有的元素一樣，種類又一樣，就可以比較!
 ```{r}
 mei>pon
 ```
-### �ΦV�q[�Ʀr]�i�H�d�ߡA��p�ڷQ�d�ߤp�����h�ֶ���
+### 用向量[數字]可以查詢，比如我想查詢小美有多少黃金
 ```{r}
 mei[3]
 ```
-### !!!R�y���Ĥ@�Ӥ����O1�A���O0��
-### �V�q[C(�Ʀr,�Ʀr)]�i�H�d�߸ӦV�q���h�Ӽƭ�
-### ��p���ڷQ�d�ߤp���������M�x���٦������A�L���V�q�s���O1�M2�M3�A
-### ���N�Oc(1,2,3)
+### !!!R語言第一個元素是1，不是0唷
+### 向量[C(數字,數字)]可以查詢該向量的多個數值
+### 比如說我想查詢小美的美金和台幣還有黃金，他的向量編號是1和2和3，
+### 那就是c(1,2,3)
 ```{r}
 mei[c(1,2,3)]
 ```
-### �W�z�o�Ӥ�k�n���T�ӼƦr�A�p�G�L�O�s��
-### ���i�H��(1:3)
+### 上述這個方法要打三個數字，如果他是連續
+### 其實可以打(1:3)
 ```{r}
 mei[c(1:3)]
 ```
-### ���p�G�����D�L�����ǫ��?
-### ���i�H�q�L���R�W�d��
+### 那如果不知道他的順序怎辦?
+### 其實可以從他的命名查詢
 ```{r}
 names(mei)<-c("us","tw","gold")
 ```
-### ���U�ӧڷQ�d�ߤp���������M����
+### 接下來我想查詢小美的美金和黃金
 ```{r}
 mei[c("us","gold")]
 ```
-### ���mean()�i�H�p��ӿ�V�q�ο�����V�q��������
+### 函數mean()可以計算該選向量或選取的向量的平均值
 ```{r}
 mean(mei)
 ```
-### �H�U�OR������B��l�A�N�p�W�z����p�D�p���������B�x���M�����A������G���T�|�^��TRUE�A���F�|�^��FALSE
-### >�j��
-### <�p��
-### <=���j��
-### >=���p��
-### ==����
-### !=������
-### �V�q[����᪺�V�q]�o�˪��g�k�i�H�D�X�w�g��n�L�᪺��
-### ���]�ڷQ��p���j��10���]��
-### ���ڥi�H���i����
+### 以下是R的比較運算子，就如上述比較小胖小美的美金、台幣和黃金，比較結果正確會回傳TRUE，錯了會回傳FALSE
+### >大於
+### <小於
+### <=不大於
+### >=不小於
+### ==等於
+### !=不等於
+### 向量[比較後的向量]這樣的寫法可以挑出已經比好過後的值
+### 假設我想找小美大於10的財物
+### 那我可以先進行比較
 ```{r}
 bigthan10<-mei>10
 ```
-### �M��A�H������X��TRUE,FALSE�D��X�ڭn���F��
+### 然後再以此比較出的TRUE,FALSE挑選出我要的東西
 ```{r}
 mei[bigthan10]
 ``` 
-### �o�˪��n�B�A�b��i�H�b�ڤ��T�w�ӦV�q�Ҧ���T��
-### ��ֳt�D��X�ڭn���F��
-## �G���V�q~~�x�}
-### �ƻ�O�x�}��?
-### �N�O���C�P�檺��ƫ��A
-## ��matrix()�гy�x�}
-### �H�U�T�I(matrix���T�ӰѼ�)�Omatrix��ƪ����I
-### 1. �Ĥ@�ӰѼƬO�n��i�x�}������1:9�O(1,2,3,4,5,6,7,8,9)��²��g�k
-### 2. �ĤG�ӰѼ�byrow�p�G=TRUE�N�O�񺡯x�}�ɤw�C����V��J�����AFALSE�h���H�檺��V��
-### 3. �ĤT�Ө��nrow���ܯx�}��3�C
-### �H�U���ΦV�q�гy�����A�b�ƦC�X�@�ӯx�}
-### ���O�O�p�w(yee)�B�p�s(lon)�B�p��(fon)�ҫ����������M�p��
+### 這樣的好處，在於可以在我不確定該向量所有資訊時
+### 能快速挑選出我要的東西
+## 二維向量~~矩陣
+### 甚麼是矩陣阿?
+### 就是有列與欄的資料型態
+## 用matrix()創造矩陣
+### 以下三點(matrix的三個參數)是matrix函數的重點
+### 1. 第一個參數是要放進矩陣的元素1:9是(1,2,3,4,5,6,7,8,9)的簡單寫法
+### 2. 第二個參數byrow如果=TRUE就是填滿矩陣時已列的方向放入元素，FALSE則為以欄的方向填滿
+### 3. 第三個函數nrow表示矩陣有3列
+### 以下先用向量創造元素，在排列出一個矩陣
+### 分別是小已(yee)、小龍(lon)、小芳(fon)所持有的黃金和鑽石
 ```{r}
 yee<-c(80,100)
 ```
@@ -139,14 +139,14 @@ lon<-c(90,90)
 ```{r}
 fon<-c(60,120)
 ```
-### �A�ӥD�˦��x�}
+### 再來主裝成矩陣
 ```{r}
 property<-matrix(c(yee,lon,fon),byrow=TRUE,nrow=3)
 ```
 ```{r}
 property
 ```
-### ��rownames()�Mcolnames()�i�H���x�}���C�P��R�W
+### 用rownames()和colnames()可以為矩陣的列與欄命名
 ```{r}
 keeper<-c("yee","lon","fon")
 ```
@@ -158,99 +158,99 @@ rownames(property)<-keeper
 colnames(property)<-mine
 property
 ```
-### rowSums()��ƥi�H�ۥ[�x�}���C�ӦC���`�M�A���ͷs���V�q
+### rowSums()函數可以相加矩陣中每個列的總和，產生新的向量
 ```{r}
 eachoneproperty<-rowSums(property)
 eachoneproperty
 ```
-### cbind()��ƥi�H�W�[�x�}����(�e���O�ӦV�q�Ҭۥ[�x�}�P�˼ƶq���C)
+### cbind()函數可以增加矩陣的欄(前提是該向量所相加矩陣同樣數量的列)
 ```{r}
 big_property<-cbind(property,eachoneproperty)
 big_property
 ```
-### rbind()��ƥi�H�W�[�x�}���C
+### rbind()函數可以增加矩陣的列
 ```{r}
 tsai<-c(20,160)
 fourkeeper<-rbind(property,tsai)
 fourkeeper
 ```
-### ��ls()��ƥi�H�˵��u�@�Ϫ����e(�Ҧ����O�X���V�q�B�x�}...�Ҧ��F��)
+### 用ls()函數可以檢視工作區的內容(所有指令出的向量、矩陣...所有東西)
 ```{r}
 ls()
 ```
-### colSums()�۹��rowSums()�A�O�ΨӬۥ[�檺!
+### colSums()相對於rowSums()，是用來相加欄的!
 ```{r}
 minetotal<-colSums(property)
 minetotal
 ```
-## �x�}���d��
-### �x�}[1,2]�i�H��X�ӯx�}�Ĥ@�C�ĤG�檺����
-### �x�}[1:3,2:4]�i�H��X�ӯx�}�Ĥ@�C�ܲĤT�C�P�ĤG��ܲĥ|�檺����
-### �x�}[,1]�|�C�X�Ĥ@�檺�Ҧ�����
-### �x�}[1,]�h�|�C�X�Ĥ@�C���Ҧ�����
-## �x�}���p��
-### �x�}�O�i�H�p�⪺!!!��p�����M�p�ۨC���糣�O10000��
+## 矩陣的查詢
+### 矩陣[1,2]可以選出該矩陣第一列第二欄的元素
+### 矩陣[1:3,2:4]可以選出該矩陣第一列至第三列與第二欄至第四欄的元素
+### 矩陣[,1]會列出第一欄的所有元素
+### 矩陣[1,]則會列出第一列的所有元素
+## 矩陣的計算
+### 矩陣是可以計算的!!!比如黃金和鑽石每公斤都是10000元
 ```{r}
 money<-property*10000
 money
 ```
-### ���p�G�����M�p�ۨC������椣�@�˩O??
-### �٬O�i�H�p�⪺
+### 但如果黃金和鑽石每公斤價格不一樣呢??
+### 還是可以計算的
 ```{r}
 price<-c(20,600)
 true_money<-property*price
 true_money
 ```
-### �Ъ`�N�A�W�z�x�}�B�⤣�O�зǪ��A�зǯx�}�B��l�n�ϥ�%*%��
-## �]���V�q
-### �]���V�q�O�Ψ��x�s���O���ܼƪ��έp��ơA���O���ܼƻP�s���ܼƳ̥D�n���t���b��
-### ���O���ܼƦ����O�Ӽƪ��W��!!!�ӳs���ܼƫh�|���L�a�h���Ӽ�
-### �@�Ӧn���]���V�q�d�ҬO�Ͳz�ʧO�A�C�@���[���ȳ��i�H�Q�������Ͳz�k�ʩΥͲz�k��
-## factor()��ƨӫŧi�]���V�q�A�H�U�H�Ͳz�ʧO�@�d��
+### 請注意，上述矩陣運算不是標準的，標準矩陣運算子要使用%*%喔
+## 因素向量
+### 因素向量是用來儲存類別型變數的統計資料，類別型變數與連續型變數最主要的差異在於
+### 類別型變數有類別個數的上限!!!而連續型變數則會有無窮多的個數
+### 一個好的因素向量範例是生理性別，每一個觀測值都可以被分類成生理男性或生理女性
+## factor()函數來宣告因素向量，以下以生理性別作範例
 
 ```{r}
 gender_vector<-c("Male","Female","Female","Male","Male")
 factor_gender_vector<-factor(gender_vector)
 factor_gender_vector
 ```
-### �]���V�q�����O���ܼƤS�i�����W�����O���ܼƩM�������O���ܼơA��p���Ӧ]���V�q�����ذʪ��A�A�L�k����U�ذʪ������n�a�A�L�N���W�����O���ܼơA�Ϥ��A�������O���ܼƦ��ѥͪ�����S�ʡA��p�ūפ��C�����A���N��C�j�A���N�񤤤j�C
-### ��levels()�o�Ө�ƨӧ��ܦ]���V�q�ŧO���W�١A�H�U�H�Ͳz�ʧO�@�d�ҡA�Ъ`�N���ܦW�ٮɿ�J���ǫD�`���n�AR�w�]�O�H�r�����ǱƦC�A�ҥH�n��male>M�Afemal>F�A���ǭn�O��f�bm�A�d�U�O�ϤF�A���M��ƴN��ۤϤF�C
+### 因素向量的類別型變數又可分為名目類別型變數和順序類別型變數，比如有個因素向量有五種動物，你無法比較各種動物間的好壞，他就為名目類別型變數，反之，順序類別型變數有天生的比較特性，比如溫度分低中高，中就比低大，高就比中大。
+### 用levels()這個函數來改變因素向量級別的名稱，以下以生理性別作範例，請注意改變名稱時輸入順序非常重要，R預設是以字母順序排列，所以要把male>M，femal>F，順序要是先f在m，千萬別反了，不然資料就跟著反了。
 ```{r}
 levels(factor_gender_vector)<-c("F","M")
 factor_gender_vector
 ```
-## summary()��ƥi�H�ϧڭֳ̧t�o��@�ո�ƪ��K�n�A�H�U���M�H�Ͳz�ʧO���d�ҡA��summary�i�H���ڭֳ̧t���D���h�֥Ͳz�k�ʩM�Ͳz�k�ʡC
+## summary()函數可以使我們快速得到一組資料的摘要，以下仍然以生理性別為範例，用summary可以讓我們快速知道有多少生理男性和生理女性。
 ```{r}
 summary(gender_vector)
 summary(factor_gender_vector)
 ```
-### �q�W�����G�i�H���D�A�p�Gsummary�]���V�q�A�L�|���P��@��V�q�A��C�����O���Ӽ���ܥX��
-## ���ǫ��]���V�q���
-### ���p��W���Ͳz�ʧO��F�MM���(��>��<����B��l)�AR�|��ܿ��~�T���A�]���b�L���̡A���]���V�q���W�ئ�]���V�q�A�u�����ǫ��]���V�q�~����,�H�U�γt�רӰ����ǫ��]���V�q������
+### 從上面結果可以知道，如果summary因素向量，他會不同於一般向量，把每個類別的個數顯示出來
+## 順序型因素向量比較
+### 假如把上面生理性別的F和M比較(用>或<比較運算子)，R會顯示錯誤訊息，因為在他眼裡，此因素向量為名目行因素向量，只有順序型因素向量才能比較,以下用速度來做順序型因素向量的介紹
 ```{r}
 speed<-c("fast","slow","slow","fast","insane")
 ```
-## factor()���ǫ��]���V�q�Ϊk
-### factor()�A���̭��n�h�[ordered�Mlevels�~��Ϧ��]���V�q�������ǫ��]���V�q
+## factor()順序型因素向量用法
+### factor()括弧裡面要多加ordered和levels才能使此因素向量成為順序型因素向量
 
 ```{r}
 factor_speed<-factor(speed,ordered=TRUE,levels=c("slow","fast","insane"))
 factor_speed
 ```
-### �q�W�z���G�A�i�H�o�{R�ΤF����B��l�Ӥ����X���]���V�q�A�ҩ����]���V�q�����ǫ��]���V�q
-### ���U�ӧڭ̴N�i�H�i�����@�ˬO�V�q���@�ءA�ڭ̫K�H[�Ʀr]�ӬD��䤤���ƭ�
+### 從上述結果，可以發現R用了比較運算子來分類出此因素向量，證明此因素向量為順序型因素向量
+### 接下來我們就可以進行比較一樣是向量的一種，我們便以[數字]來挑選其中的數值
 ```{r}
 da2<-factor_speed[2]
 da5<-factor_speed[5]
 da2>da5
 ```
-## ��Ʈ�(dataframe)
-### �x�}���������O�ۦP���A��Ʈإi�H�O���P��!!!
-### �]���L���[�����x�s���C�A�ܼ��x�s����!!!
-### head()��ƥi�H�ϧA���[��e���Ӹ��
-### str()��ƥi�H�i�D�ڭ̸�Ʈت��T��
-### �]�A�[���Ȫ��`�ơB�ܼƪ��`�ơB�ܼƦW�ٲM��B�ܼƪ���������M�e�X���[���ȡA��ĳ����@����Ʈɳ����Φ���ƨ��A�X�o����ƪ��˺A
-## data.frame()��ƴN�O�ӫإ߸�Ʈت�!�H�U�H�Ӷ��t�K�j��P���d��
+## 資料框(dataframe)
+### 矩陣中的元素是相同的，資料框可以是不同的!!!
+### 因為他的觀測值儲存為列，變數儲存為欄!!!
+### head()函數可以使你先觀察前六個資料
+### str()函數可以告訴我們資料框的訊息
+### 包括觀測值的總數、變數的總數、變數名稱清單、變數的資料類型和前幾個觀測值，建議拿到一筆資料時都限用此函數來瞭幾這筆資料的樣態
+## data.frame()函數就是來建立資料框的!以下以太陽系八大行星為範例
 ```{r}
 name<-c("Mercury","Venus","Earth","Mars","Jupiter","Saturn","Uranus","Neptune")
 type<-c("Terrestrial planet", "Terrestrial planet", "Terrestrial planet", "Terrestrial planet", "Gas giant", "Gas giant", "Gas giant", "Gas giant")
@@ -260,30 +260,30 @@ rings <- c(FALSE, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, TRUE)
 planet_df<-data.frame(name,type,diameter,rotation,rings)
 planet_df
 ```
-## dataframe���d��
-### ��Ʈ�[1,2]�N��dataframe�Ĥ@�C�ĤG�檺������X
-### ��Ʈ�[1:3,2:4]�Ndataframe�Ĥ@��ĤT�C���ĤG�ܲĥ|�檺������X
-### ��Ʈ�[1,]�|��Ĥ@�C�Ҧ�������X
+## dataframe的查詢
+### 資料框[1,2]將此dataframe第一列第二欄的元素選出
+### 資料框[1:3,2:4]將dataframe第一到第三列嶼第二至第四欄的元素選出
+### 資料框[1,]會把第一列所有元素選出
 ```{r}
 planet_df[1,3]
 ```
-### �o�O���P�����|
+### 這是水星的直徑
 ```{r}
 planet_df[4,]
 ```
-### �o�O���P�Ҧ�����T
-### �ڭ̤]�i�H��dataframe���W�٨Ӷi��d�ߡA�b�ڭ̤����D�L����쪺�ɭ�
+### 這是火星所有的資訊
+### 我們也可以用dataframe的名稱來進行查詢，在我們不知道他的欄位的時候
 ```{r}
 planet_df[1:5,"diameter"]
 ```
-### $�Ÿ����B��
-### �p�G�n��Xdiameter�ܼƪ��Ҧ��ȥi�H�o�ˤl
+### $符號的運用
+### 如果要選出diameter變數的所有值可以這樣子
 ```{r}
 planet_df[,3]
 planet_df[,"diameter"]
 planet_df$diameter
 ```
-### �޿��(TRUE,FALSE)���V�q�bdataframe���d�߬O�i�H�ֳt�ϥΪ��A���]�ڭ̭n�䦳�����P�y�A�i�H�o�˰�
+### 邏輯值(TRUE,FALSE)的向量在dataframe的查詢是可以快速使用的，假設我們要找有環的星球，可以這樣做
 ```{r}
 planet_df[rings,]
 ```
