@@ -20,6 +20,10 @@ output: html_document
     + [The apply family](#2.4)    
     + [Utilities](#2.5)   
 * [Introduction to the tidyverse](#3)    
+    + [Data wrangling](#3.1)
+    + [Data visualization](#3.2)
+    + [Grouping and summarizing](#3.3)
+    + [Types of visualizations](#3.4)
 
 <h2 id = '1'></h2>
 # Introduction to R   
@@ -479,7 +483,233 @@ for(li in linkedin){
   print(li)
 }
 ```
-當數值是2(<5)時候，他只會說有點邊緣，不會print出他的數值(因為有next)，直接跳到下一個17，而17是紅翻天了你，接下來進行break，所以最後一個數值14不會跑   
+當數值是2(<5)時候，他只會說有點邊緣，不會print出他的數值(因為有next)，直接跳到下一個17，而17是紅翻天了你，接下來進行break，所以最後一個數值14不會跑    
 
 <h3 id = '2.3'></h3>
 ## Functions
+如何查詢函數?   
+使用help(函數)    
+?函數   
+args(函數)可以使你快速了解想知道函數的寫法    
+以下用mean()函數作介紹    
+mean函數晚整寫法是    
+mean(x, trim = 0 ,na.rm=FALSE)    
+X是你一定要填的數值，如果沒有填R會給你error   
+後面兩個有默認值，如果你沒填R就會當作你用默認值   
+所以後面兩個也較optional arguments    
+```{r}
+facebook<-c(17,NA,5,16,8,13,14)
+mean(facebook)
+mean(facebook,na.rm=TRUE)
+```
+由以上的程式碼，可以知道改動默認值的差異    
+此外，函數是可以套著用的!疊加使用，比如   
+print(paste("your speed is",speed))   
+以下呈上面程式碼來作例子    
+```{r}
+linkedin<-c(16,9,13,5,NA,17,14)
+mean(abs(linkedin-facebook),na.rm=TRUE)
+```
+Writing Functions自訂函數   
+所自訂函數<- function(argument(可設定默認值)){    
+  此自訂函數的內容    
+}   
+1. 可以不要有argument唷   
+2. 變數跑過函數會跑出結果，但此結果不會改變變數，變數仍然跟跑函數前一樣，除非他被重新指定(assign)才會變    
+3. 函數可以很複雜(廢話)，他能包含住前面所學的迴圈，比較運算子甚至其他自訂函數!   
+```{r}
+hello<-function(){
+  print("HI!!!!")
+  return(TRUE)
+}
+hello()#要點1
+triple <- function(x){
+  x<-3*x
+}
+a<-5
+triple(a)#進入函數後的結果
+a#要點2
+linkedin<-c(16,9,13,5,2,17,14)
+facebook<-c(17,7,5,16,8,13,14)
+interpret<- function(num_views){
+  if(num_views>15){
+    print("你好紅")
+    return(num_views)
+  }else{
+    print("多爭取點關注度")
+    return(0)
+  }
+}
+interpret_all<- function(views, return_sum=TRUE){
+  count<- 0
+  for(v in views){
+    count<-count+interpret(v)
+  }
+  if(return_sum==TRUE){
+    return(count)
+  }else{
+    return(NULL)
+  }
+}#要點3
+interpret_all(linkedin)
+interpret_all(facebook)
+```
+最後一個程式碼可以表達社群網站瀏覽次數高的日子的總和    
+其內嵌了迴圈、比較運算子和其他自訂函數    
+R package!!!    
+R package就是裡面有一堆函數，你可以用search()來觀看自己目前擁有多少package，就可以知道自己有那些函數   
+R 一開始就會給你一些基本的package，但沒有的就必須要自己裝，以下兩個函數非常重要:   
+1. install.packages()安裝   
+2. library()載入    
+以下用安裝ggplot2作範例   
+install.packages("ggplot2")   
+library(ggplot2)    
+qplot(mtcars$wt,mtcars$hp)    
+search()    
+從search的結果知道ggplot2被裝進來了，這樣我們才可以畫圖表。    
+library()和require()這兩個函數其實蠻不挑剔的，    
+library(rjson)和library("rjson")會有一樣的結果。    
+
+<h3 id = '2.4'></h3>
+##The apply family    
+lappy!!!    
+基本語法lapply(x,fun,...)   
+lapply函數是最基礎循環操作函數之一，對list,dataframe數據進行循環，並返回x長度同樣的list結構做為展現   
+!!!請記住fun代表的是函數，你塞哪個函數，lapply就會對你給的x中每一個值進行此函數的運作!!!    
+這裡有個額外的插曲，叫做anonymous functions，就是匿名函數，也一樣可以用在lapply，這樣就不用再額外寫自訂函數再加進去了!   
+以下為anonymous functions的範例   
+```{r}
+triple<-function(x){3*x}#named function
+function(x){3*x}#anonymous function
+lapply(list(1,2,3),function(x){3*x})
+lapply(list(1,2,3),triple)
+```
+跑出來的結果是一樣的，只是一個有取名一個沒取名字而已    
+另外如果你的fun要設定默認值，lapply也是可追加的!    
+```{r}
+multiply<-function(x,factor){
+  x*factor
+}
+lapply(list(1,2,3),multiply,factor=3)
+```
+
+sapply!!!   
+sapply是一個簡化版的lapply，其曾將兩個函數simplify和USE.NAMES，主要就是讓輸出起來更加好看   
+請注意sapply返回值為向量，而不是list對象    
+如果把simplify=FALSE,USE.NAMES=FALSE那就跟lapply一樣了    
+sapply也可以產出矩陣(當(simplify=array)或默認情況)    
+vapply!!!   
+vapply類似於sapply，但他多提供了fun.value參數，用來控制返回值得行名，這樣可以讓程序更健壯    
+vapply() can be considered a more robust version of sapply(), because you explicitly restrict the output of the function you want to apply.   
+簡而言之，vapply比sapply更加嚴謹如果你的fun.value無法對應到你的fun，他會跳出錯誤訊息，不像sapply因為沒這道手續而繼續跑。    
+輸出比較    
+lapply()    
+apply dunction over list or vector    
+output=list   
+sapply()    
+apply dunction over list or vector    
+!try to simplify list to array    
+vapply()    
+apply dunction over list or vector    
+explicitly specify output format   
+
+<h3 id = '2.5'></h3>
+##Utilities   
+Mathematical utilities    
+1. abs()取絕對值    
+2. sum()加總    
+3. mean()取平均數   
+4. round()四捨五入進整數    
+Data utilities    
+1. seq()Generate sequences, by specifying the from, to, and by arguments.   
+2. rep()replicate(複製)向量或清單(list)中的元素   
+3. sort()升冪排列一個向量裡的值，字串或邏輯值也可以唷   
+4. rev()reverse(逆轉)顛倒再資料裡面的元素順序   
+5. str()展現資料結構    
+6. append()把東西加入向量或清單(list)   
+7. is.*()檢查這個函數的種類   
+8. as.*()改變一個R object到另一種類   
+9. unlist()把一個清單拆平(flatten)成一個向量    
+Regular Expression    
+以下用各種email的搜索來介紹RE用法和相關函數   
+```{r}
+emails <- c("john.doe@ivyleague.edu","education@world.gov", "dalai.lama@peace.org","invalid.edu","quant@bigdatacollege.edu","cookie.monster@sesame.tv")
+grepl("edu",emails)
+hits<-grep("edu",emails)
+emails[hits]
+```
+上述情況會把education...的那個也抓進來，但其實我要的是結尾是.edu的mail，以下改變RE可以做到    
+補充:grepl(RE,x)可以判斷x是否符合RE標準   
+grep(RE,X)則是會顯示出符合RE標準的x裡的元素   
+```{r}
+grepl("@.*\\.edu$",emails)
+hits<-grep("@.*\\.edu$",emails)
+emails[hits]
+```
+以下介紹RE常用的符號:   
+1. ^代表搜尋字首   
+2. $代表搜尋字尾   
+3. @  because a valid email must contain an at-sign.    
+4. .*  which matches any character (.) zero or more times . Both the dot and the asterisk are metacharacters. You can use them to match any character between the at-sign and the ".edu" portion of an email address.    
+5. \\.edu$  to match the ".edu" part of the email at the end of the string. The \\ part escapes the dot: it tells R that you want to use the . as an actual character.    
+```{r}
+sub("@.*\\.edu$","@datacamp.edu",emails)
+```
+sub(RE,想替換的東西,x)可以把RE到的東西用想替換的東西替換掉    
+gsub()跟sub()最大差別在於前者會替換所有找到的，後者只會替換地一個找到的，其他符合的便不會替換了
+以下介紹更進階的RE    
+```{r}
+awards <- c("Won 1 Oscar.",
+  "Won 1 Oscar. Another 9 wins & 24 nominations.",
+  "1 win and 2 nominations.",
+  "2 wins & 3 nominations.",
+  "Nominated for 2 Golden Globes. 1 more win & 2 nominations.",
+  "4 wins & 1 nomination.")
+sub(".*\\s([0-9]+)\\snomination.*$", "\\1", awards)
+```
+讓我們拆開來看這個RE
+1. .*: A usual suspect! It can be read as "any character that is matched zero or more times".    
+2. \\s: Match a space. The "s" is normally a character, escaping it (\\) makes it a metacharacter.    
+3. [0-9]+: Match the numbers 0 to 9, at least once (+).   
+4. ([0-9]+): The parentheses are used to make parts of the matching string available to define the replacement. The \\1 in the replacement argument of sub() gets set to the string that is captured by the regular expression [0-9]+.   
+Times and Date!!!   
+以下列點介紹date和time重要的符號    
+* Sys.Date()會顯示現在日子    
+* Sys.time()會顯示現在時間    
+* unclass()兩只都會顯示其距離1970/1/1多久   
+* as.Date()和as.time()可以把字串轉成date和time的形式    
+但並不是所有字串都會乖乖按照上述兩個函數的format    
+所以衍生出很多轉變的符號    
+* %Y: 4-digit year (1982)   
+* %y: 2-digit year (82)   
+* %m: 2-digit month (01)    
+* %d: 2-digit day of the month (13)   
+* %A: weekday (Wednesday)   
+* %a: abbreviated weekday (Wed)   
+* %B: month (January)   
+* %b: abbreviated month (Jan)   
+* %H: hours as a decimal number (00-23)   
+* %I: hours as a decimal number (01-12)   
+* %M: minutes as a decimal number   
+* %S: seconds as a decimal number   
+* %T: shorthand notation for the typical format %H:%M:%S   
+* %p: AM/PM indicator   
+可以把字串轉成標準的date或time形式，當然就有反向操作的函數，那就是format()    
+```{r}
+str1 <- "May 23, '96 hours:23 minutes:01 seconds:45"
+str2 <- "2012-3-12 14:23:08"
+time1 <- as.POSIXct(str1, format = "%B %d, '%y hours:%H minutes:%M seconds:%S")
+time2<- as.POSIXct(str2,format="%Y-%m-%d %H:%M:%S")
+format(time1,"%M")
+format(time2,"%I:%M %p")
+```
+date和time的運算    
+只要計算值是相同，date和time當然也可以計算，可以用來看你登入的次數，或季節轉變的日子等等應用    
+
+* [回目錄](#0)
+
+<h2 id = '3'></h2>
+#Introduction to the tidyverse    
+
+<h3 id = '3.1'></h3>
+##Data wrangling

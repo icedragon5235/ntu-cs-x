@@ -161,7 +161,13 @@ $(document).ready(function () {
 <li><a href="#2.5">Utilities</a><br />
 </li>
 </ul></li>
-<li><a href="#3">Introduction to the tidyverse</a></li>
+<li><a href="#3">Introduction to the tidyverse</a>
+<ul>
+<li><a href="#3.1">Data wrangling</a></li>
+<li><a href="#3.2">Data visualization</a></li>
+<li><a href="#3.3">Grouping and summarizing</a></li>
+<li><a href="#3.4">Types of visualizations</a></li>
+</ul></li>
 </ul>
 <h2 id="1">
 </h2>
@@ -735,6 +741,274 @@ next很特別，他會跳過此項，然後繼續跑下面的項目</p>
 </div>
 <div id="functions" class="section level2">
 <h2>Functions</h2>
+<p>如何查詢函數?<br />
+使用help(函數)<br />
+?函數<br />
+args(函數)可以使你快速了解想知道函數的寫法<br />
+以下用mean()函數作介紹<br />
+mean函數晚整寫法是<br />
+mean(x, trim = 0 ,na.rm=FALSE)<br />
+X是你一定要填的數值，如果沒有填R會給你error<br />
+後面兩個有默認值，如果你沒填R就會當作你用默認值<br />
+所以後面兩個也較optional arguments</p>
+<pre class="r"><code>facebook&lt;-c(17,NA,5,16,8,13,14)
+mean(facebook)</code></pre>
+<pre><code>## [1] NA</code></pre>
+<pre class="r"><code>mean(facebook,na.rm=TRUE)</code></pre>
+<pre><code>## [1] 12.16667</code></pre>
+<p>由以上的程式碼，可以知道改動默認值的差異<br />
+此外，函數是可以套著用的!疊加使用，比如<br />
+print(paste(“your speed is”,speed))<br />
+以下呈上面程式碼來作例子</p>
+<pre class="r"><code>linkedin&lt;-c(16,9,13,5,NA,17,14)
+mean(abs(linkedin-facebook),na.rm=TRUE)</code></pre>
+<pre><code>## [1] 4.8</code></pre>
+<p>Writing Functions自訂函數<br />
+所自訂函數&lt;- function(argument(可設定默認值)){<br />
+此自訂函數的內容<br />
+}<br />
+1. 可以不要有argument唷<br />
+2. 變數跑過函數會跑出結果，但此結果不會改變變數，變數仍然跟跑函數前一樣，除非他被重新指定(assign)才會變<br />
+3. 函數可以很複雜(廢話)，他能包含住前面所學的迴圈，比較運算子甚至其他自訂函數!</p>
+<pre class="r"><code>hello&lt;-function(){
+  print(&quot;HI!!!!&quot;)
+  return(TRUE)
+}
+hello()#要點1</code></pre>
+<pre><code>## [1] &quot;HI!!!!&quot;</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code>triple &lt;- function(x){
+  x&lt;-3*x
+}
+a&lt;-5
+triple(a)#進入函數後的結果
+a#要點2</code></pre>
+<pre><code>## [1] 5</code></pre>
+<pre class="r"><code>linkedin&lt;-c(16,9,13,5,2,17,14)
+facebook&lt;-c(17,7,5,16,8,13,14)
+interpret&lt;- function(num_views){
+  if(num_views&gt;15){
+    print(&quot;你好紅&quot;)
+    return(num_views)
+  }else{
+    print(&quot;多爭取點關注度&quot;)
+    return(0)
+  }
+}
+interpret_all&lt;- function(views, return_sum=TRUE){
+  count&lt;- 0
+  for(v in views){
+    count&lt;-count+interpret(v)
+  }
+  if(return_sum==TRUE){
+    return(count)
+  }else{
+    return(NULL)
+  }
+}#要點3
+interpret_all(linkedin)</code></pre>
+<pre><code>## [1] &quot;你好紅&quot;
+## [1] &quot;多爭取點關注度&quot;
+## [1] &quot;多爭取點關注度&quot;
+## [1] &quot;多爭取點關注度&quot;
+## [1] &quot;多爭取點關注度&quot;
+## [1] &quot;你好紅&quot;
+## [1] &quot;多爭取點關注度&quot;</code></pre>
+<pre><code>## [1] 33</code></pre>
+<pre class="r"><code>interpret_all(facebook)</code></pre>
+<pre><code>## [1] &quot;你好紅&quot;
+## [1] &quot;多爭取點關注度&quot;
+## [1] &quot;多爭取點關注度&quot;
+## [1] &quot;你好紅&quot;
+## [1] &quot;多爭取點關注度&quot;
+## [1] &quot;多爭取點關注度&quot;
+## [1] &quot;多爭取點關注度&quot;</code></pre>
+<pre><code>## [1] 33</code></pre>
+<p>最後一個程式碼可以表達社群網站瀏覽次數高的日子的總和<br />
+其內嵌了迴圈、比較運算子和其他自訂函數<br />
+R package!!!<br />
+R package就是裡面有一堆函數，你可以用search()來觀看自己目前擁有多少package，就可以知道自己有那些函數<br />
+R 一開始就會給你一些基本的package，但沒有的就必須要自己裝，以下兩個函數非常重要:<br />
+1. install.packages()安裝<br />
+2. library()載入<br />
+以下用安裝ggplot2作範例<br />
+install.packages(“ggplot2”)<br />
+library(ggplot2)<br />
+qplot(mtcars<span class="math inline">\(wt,mtcars\)</span>hp)<br />
+search()<br />
+從search的結果知道ggplot2被裝進來了，這樣我們才可以畫圖表。<br />
+library()和require()這兩個函數其實蠻不挑剔的，<br />
+library(rjson)和library(“rjson”)會有一樣的結果。</p>
+<h3 id="2.4">
+</h3>
+</div>
+<div id="the-apply-family" class="section level2">
+<h2>The apply family</h2>
+<p>lappy!!!<br />
+基本語法lapply(x,fun,…)<br />
+lapply函數是最基礎循環操作函數之一，對list,dataframe數據進行循環，並返回x長度同樣的list結構做為展現<br />
+!!!請記住fun代表的是函數，你塞哪個函數，lapply就會對你給的x中每一個值進行此函數的運作!!!<br />
+這裡有個額外的插曲，叫做anonymous functions，就是匿名函數，也一樣可以用在lapply，這樣就不用再額外寫自訂函數再加進去了!<br />
+以下為anonymous functions的範例</p>
+<pre class="r"><code>triple&lt;-function(x){3*x}#named function
+function(x){3*x}#anonymous function</code></pre>
+<pre><code>## function(x){3*x}</code></pre>
+<pre class="r"><code>lapply(list(1,2,3),function(x){3*x})</code></pre>
+<pre><code>## [[1]]
+## [1] 3
+## 
+## [[2]]
+## [1] 6
+## 
+## [[3]]
+## [1] 9</code></pre>
+<pre class="r"><code>lapply(list(1,2,3),triple)</code></pre>
+<pre><code>## [[1]]
+## [1] 3
+## 
+## [[2]]
+## [1] 6
+## 
+## [[3]]
+## [1] 9</code></pre>
+<p>跑出來的結果是一樣的，只是一個有取名一個沒取名字而已<br />
+另外如果你的fun要設定默認值，lapply也是可追加的!</p>
+<pre class="r"><code>multiply&lt;-function(x,factor){
+  x*factor
+}
+lapply(list(1,2,3),multiply,factor=3)</code></pre>
+<pre><code>## [[1]]
+## [1] 3
+## 
+## [[2]]
+## [1] 6
+## 
+## [[3]]
+## [1] 9</code></pre>
+<p>sapply!!!<br />
+sapply是一個簡化版的lapply，其曾將兩個函數simplify和USE.NAMES，主要就是讓輸出起來更加好看<br />
+請注意sapply返回值為向量，而不是list對象<br />
+如果把simplify=FALSE,USE.NAMES=FALSE那就跟lapply一樣了<br />
+sapply也可以產出矩陣(當(simplify=array)或默認情況)<br />
+vapply!!!<br />
+vapply類似於sapply，但他多提供了fun.value參數，用來控制返回值得行名，這樣可以讓程序更健壯<br />
+vapply() can be considered a more robust version of sapply(), because you explicitly restrict the output of the function you want to apply.<br />
+簡而言之，vapply比sapply更加嚴謹如果你的fun.value無法對應到你的fun，他會跳出錯誤訊息，不像sapply因為沒這道手續而繼續跑。<br />
+輸出比較<br />
+lapply()<br />
+apply dunction over list or vector<br />
+output=list<br />
+sapply()<br />
+apply dunction over list or vector<br />
+!try to simplify list to array<br />
+vapply()<br />
+apply dunction over list or vector<br />
+explicitly specify output format</p>
+<h3 id="2.5">
+</h3>
+</div>
+<div id="utilities" class="section level2">
+<h2>Utilities</h2>
+<p>Mathematical utilities<br />
+1. abs()取絕對值<br />
+2. sum()加總<br />
+3. mean()取平均數<br />
+4. round()四捨五入進整數<br />
+Data utilities<br />
+1. seq()Generate sequences, by specifying the from, to, and by arguments.<br />
+2. rep()replicate(複製)向量或清單(list)中的元素<br />
+3. sort()升冪排列一個向量裡的值，字串或邏輯值也可以唷<br />
+4. rev()reverse(逆轉)顛倒再資料裡面的元素順序<br />
+5. str()展現資料結構<br />
+6. append()把東西加入向量或清單(list)<br />
+7. is.<em>()檢查這個函數的種類<br />
+8. as.</em>()改變一個R object到另一種類<br />
+9. unlist()把一個清單拆平(flatten)成一個向量<br />
+Regular Expression<br />
+以下用各種email的搜索來介紹RE用法和相關函數</p>
+<pre class="r"><code>emails &lt;- c(&quot;john.doe@ivyleague.edu&quot;,&quot;education@world.gov&quot;, &quot;dalai.lama@peace.org&quot;,&quot;invalid.edu&quot;,&quot;quant@bigdatacollege.edu&quot;,&quot;cookie.monster@sesame.tv&quot;)
+grepl(&quot;edu&quot;,emails)</code></pre>
+<pre><code>## [1]  TRUE  TRUE FALSE  TRUE  TRUE FALSE</code></pre>
+<pre class="r"><code>hits&lt;-grep(&quot;edu&quot;,emails)
+emails[hits]</code></pre>
+<pre><code>## [1] &quot;john.doe@ivyleague.edu&quot;   &quot;education@world.gov&quot;     
+## [3] &quot;invalid.edu&quot;              &quot;quant@bigdatacollege.edu&quot;</code></pre>
+<p>上述情況會把education…的那個也抓進來，但其實我要的是結尾是.edu的mail，以下改變RE可以做到<br />
+補充:grepl(RE,x)可以判斷x是否符合RE標準<br />
+grep(RE,X)則是會顯示出符合RE標準的x裡的元素</p>
+<pre class="r"><code>grepl(&quot;@.*\\.edu$&quot;,emails)</code></pre>
+<pre><code>## [1]  TRUE FALSE FALSE FALSE  TRUE FALSE</code></pre>
+<pre class="r"><code>hits&lt;-grep(&quot;@.*\\.edu$&quot;,emails)
+emails[hits]</code></pre>
+<pre><code>## [1] &quot;john.doe@ivyleague.edu&quot;   &quot;quant@bigdatacollege.edu&quot;</code></pre>
+<p>以下介紹RE常用的符號:<br />
+1. ^代表搜尋字首<br />
+2. <span class="math inline">\(代表搜尋字尾 3. @ because a valid email must contain an at-sign. 4. .* which matches any character (.) zero or more times . Both the dot and the asterisk are metacharacters. You can use them to match any character between the at-sign and the &quot;.edu&quot; portion of an email address. 5. \\.edu\)</span> to match the “.edu” part of the email at the end of the string. The \ part escapes the dot: it tells R that you want to use the . as an actual character.</p>
+<pre class="r"><code>sub(&quot;@.*\\.edu$&quot;,&quot;@datacamp.edu&quot;,emails)</code></pre>
+<pre><code>## [1] &quot;john.doe@datacamp.edu&quot;    &quot;education@world.gov&quot;     
+## [3] &quot;dalai.lama@peace.org&quot;     &quot;invalid.edu&quot;             
+## [5] &quot;quant@datacamp.edu&quot;       &quot;cookie.monster@sesame.tv&quot;</code></pre>
+<p>sub(RE,想替換的東西,x)可以把RE到的東西用想替換的東西替換掉<br />
+gsub()跟sub()最大差別在於前者會替換所有找到的，後者只會替換地一個找到的，其他符合的便不會替換了 以下介紹更進階的RE</p>
+<pre class="r"><code>awards &lt;- c(&quot;Won 1 Oscar.&quot;,
+  &quot;Won 1 Oscar. Another 9 wins &amp; 24 nominations.&quot;,
+  &quot;1 win and 2 nominations.&quot;,
+  &quot;2 wins &amp; 3 nominations.&quot;,
+  &quot;Nominated for 2 Golden Globes. 1 more win &amp; 2 nominations.&quot;,
+  &quot;4 wins &amp; 1 nomination.&quot;)
+sub(&quot;.*\\s([0-9]+)\\snomination.*$&quot;, &quot;\\1&quot;, awards)</code></pre>
+<pre><code>## [1] &quot;Won 1 Oscar.&quot; &quot;24&quot;           &quot;2&quot;            &quot;3&quot;           
+## [5] &quot;2&quot;            &quot;1&quot;</code></pre>
+<p>讓我們拆開來看這個RE 1. .<em>: A usual suspect! It can be read as “any character that is matched zero or more times”.<br />
+2. \s: Match a space. The “s” is normally a character, escaping it (\) makes it a metacharacter.<br />
+3. [0-9]+: Match the numbers 0 to 9, at least once (+).<br />
+4. ([0-9]+): The parentheses are used to make parts of the matching string available to define the replacement. The \1 in the replacement argument of sub() gets set to the string that is captured by the regular expression [0-9]+.<br />
+Times and Date!!!<br />
+以下列點介紹date和time重要的符號<br />
+</em> Sys.Date()會顯示現在日子<br />
+* Sys.time()會顯示現在時間<br />
+* unclass()兩只都會顯示其距離1970/1/1多久<br />
+* as.Date()和as.time()可以把字串轉成date和time的形式<br />
+但並不是所有字串都會乖乖按照上述兩個函數的format<br />
+所以衍生出很多轉變的符號<br />
+* %Y: 4-digit year (1982)<br />
+* %y: 2-digit year (82)<br />
+* %m: 2-digit month (01)<br />
+* %d: 2-digit day of the month (13)<br />
+* %A: weekday (Wednesday)<br />
+* %a: abbreviated weekday (Wed)<br />
+* %B: month (January)<br />
+* %b: abbreviated month (Jan)<br />
+* %H: hours as a decimal number (00-23)<br />
+* %I: hours as a decimal number (01-12)<br />
+* %M: minutes as a decimal number<br />
+* %S: seconds as a decimal number<br />
+* %T: shorthand notation for the typical format %H:%M:%S<br />
+* %p: AM/PM indicator<br />
+可以把字串轉成標準的date或time形式，當然就有反向操作的函數，那就是format()</p>
+<pre class="r"><code>str1 &lt;- &quot;May 23, '96 hours:23 minutes:01 seconds:45&quot;
+str2 &lt;- &quot;2012-3-12 14:23:08&quot;
+time1 &lt;- as.POSIXct(str1, format = &quot;%B %d, '%y hours:%H minutes:%M seconds:%S&quot;)
+time2&lt;- as.POSIXct(str2,format=&quot;%Y-%m-%d %H:%M:%S&quot;)
+format(time1,&quot;%M&quot;)</code></pre>
+<pre><code>## [1] NA</code></pre>
+<pre class="r"><code>format(time2,&quot;%I:%M %p&quot;)</code></pre>
+<pre><code>## [1] &quot;02:23 下午&quot;</code></pre>
+<p>date和time的運算<br />
+只要計算值是相同，date和time當然也可以計算，可以用來看你登入的次數，或季節轉變的日子等等應用</p>
+<ul>
+<li><a href="#0">回目錄</a></li>
+</ul>
+<h2 id="3">
+</h2>
+</div>
+</div>
+<div id="introduction-to-the-tidyverse" class="section level1">
+<h1>Introduction to the tidyverse</h1>
+<h3 id="3.1">
+</h3>
+<div id="data-wrangling" class="section level2">
+<h2>Data wrangling</h2>
 </div>
 </div>
 
