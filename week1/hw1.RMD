@@ -648,9 +648,9 @@ emails[hits]
 ```
 以下介紹RE常用的符號:   
 1. ^代表搜尋字首   
-2. $代表搜尋字尾   
-3. @  because a valid email must contain an at-sign.    
-4. .*  which matches any character (.) zero or more times . Both the dot and the asterisk are metacharacters. You can use them to match any character between the at-sign and the ".edu" portion of an email address.    
+2. 金錢符號代表搜尋字尾   
+3. 小老鼠  because a valid email must contain an at-sign.    
+4. .*  which matches any character (.) zero or more times . Both the dot and the asterisk are metacharacters. You can use them to match any character between the at-sign and the ".edu" portion of an email address.        
 5. \\.edu$  to match the ".edu" part of the email at the end of the string. The \\ part escapes the dot: it tells R that you want to use the . as an actual character.    
 ```{r}
 sub("@.*\\.edu$","@datacamp.edu",emails)
@@ -667,7 +667,7 @@ awards <- c("Won 1 Oscar.",
   "4 wins & 1 nomination.")
 sub(".*\\s([0-9]+)\\snomination.*$", "\\1", awards)
 ```
-讓我們拆開來看這個RE
+讓我們拆開來看這個RE    
 1. .*: A usual suspect! It can be read as "any character that is matched zero or more times".    
 2. \\s: Match a space. The "s" is normally a character, escaping it (\\) makes it a metacharacter.    
 3. [0-9]+: Match the numbers 0 to 9, at least once (+).   
@@ -712,4 +712,229 @@ date和time的運算
 #Introduction to the tidyverse    
 
 <h3 id = '3.1'></h3>
-##Data wrangling
+##Data wrangling    
+The gapminder dataset   
+先把gapminder和dply載入吧   
+```{r}
+if(!require(gapminder))install.packages("gapminder",repos = "http://cran.us.r-project.org")
+library(gapminder)
+if(!require(dplyr))install.packages("dplyr",repos = "http://cran.us.r-project.org")
+library(dplyr)
+gapminder
+```
+The filter verb   
+filter()可以使你過濾篩選你要的資料    
+用,號可以篩選更多資料   
+```{r}
+gapminder %>%
+  filter(year==2002,country=="China")
+```
+這樣就可以篩選出2002年中國的資料了    
+The arrange verb    
+arrange是以欄位過濾的，而且過濾方式是升冪排列   
+如果要他降冪排列可以這樣:arrange(desc())    
+filter跟arrange是可以憶起連用喔!    
+```{r}
+gapminder %>%
+  filter(year==1957) %>%
+  arrange(desc(pop))
+```
+這樣就可以排列出1957年人口數量高到低的國家囉    
+The mutate verb   
+mutate()可以用來增加欄位或改變欄位    
+```{r}
+gapminder %>%
+mutate(lifeExp=12*lifeExp)
+gapminder %>%
+mutate(lifeExpMonths=lifeExp*12)
+```
+當然mutate也可以跟其他混在一起用    
+```{r}
+gapminder %>%
+filter(year==2007) %>%
+mutate(lifeExpMonths=12*lifeExp) %>%
+arrange(desc(lifeExpMonths))
+```
+這就是2007年以新欄位降冪排列的表    
+
+<h3 id = '3.2'></h3>
+##Data visualization    
+
+Visualizing with ggplot2    
+首先我們把ggplot2安裝且載入並用filter過濾出一個新的資料吧!   
+```{r}
+if(!require(ggplot2))install.packages("ggplot2",repos = "http://cran.us.r-project.org")
+library(ggplot2)
+gapminder_1952 <- gapminder %>%
+  filter(year == 1952)
+```
+接下來我要畫圖x軸是人口，y軸是人均gdp   
+```{r}  
+ggplot(gapminder_1952, aes(x = pop, y = gdpPercap)) +
+  geom_point()
+```   
+    
+Log scales    
+從圖可以知道，點會太集中於某區使得無法解讀，這時候就要用Log scales來解決讓途更好看    
+```{r}
+ggplot(gapminder_1952, aes(x = pop, y = lifeExp)) +
+  geom_point()+
+  scale_x_log10()
+```   
+    
+假設我要畫人口和人均gdp這種都很極端的例子，最好xy都要取log    
+```{r}
+ggplot(gapminder_1952, aes(x = pop, y = gdpPercap)) +
+  geom_point()+
+  scale_x_log10()+
+  scale_y_log10()
+```   
+    
+Additional aesthetics   
+為自己的圖表加點顏色吧!比如說我想以洲分類為顏色   
+```{r}
+ggplot(gapminder_1952, aes(x = pop, y = lifeExp,color=continent)) +
+  geom_point()+
+  scale_x_log10()
+```   
+    
+還可以調整點的大小呢!比如我現在要以人均gdp為點大小    
+```{r}
+ggplot(gapminder_1952, aes(x = pop, y = lifeExp, color = continent,size=gdpPercap)) +
+  geom_point() +
+  scale_x_log10()
+```   
+    
+Faceting刻面!!!   
+這可以把圖表再細分成其他圖表，可以使我們更容易觀察某特性下的分布，假設我要以洲來區分x軸為人口y軸為lifeExp的特性圖表，我可以這樣做    
+```{r}
+ggplot(gapminder_1952, aes(x = pop, y = lifeExp)) +
+  geom_point() +
+  scale_x_log10()+
+  facet_wrap(~continent)
+```   
+    
+假設我要畫1952~2007以年為faceting得圖表，x軸為人均gdp，y軸為lifeExp，洲為顏色，人口為點大小，我可以這樣做   
+```{r}
+ggplot(gapminder, aes(x = gdpPercap, y = lifeExp,color=continent,size=pop)) +
+  geom_point() +
+  scale_x_log10()+
+  facet_wrap(~year)
+```   
+    
+<h3 id = '3.3'></h3>
+##Grouping and summarizing    
+The summarize verb    
+summarize()可以把資料統整起來，你當然也可以把他跟filter()一起使用   
+假設我想統整1957年的lifeExp的中位數   
+```{r}
+gapminder %>%
+filter(year==1957) %>%
+summarize(medianLifeExp=median(lifeExp))
+```   
+    
+你也可以一次summarize很多東西   
+```{r}
+gapminder %>%
+filter(year==1957) %>%
+summarize(medianLifeExp=median(lifeExp),maxGdpPercap=max(gdpPercap))
+```   
+以上可以統整出1957年人均gdp最大值和lifeExp中位數    
+The group_by verb   
+利用group_by()把有同元素性質的資料合併，使你接下來處理資料或分析資料更順利!   
+```{r}
+gapminder %>%
+ group_by(year) %>%
+ summarize(medianLifeExp=median(lifeExp),maxGdpPercap=max(gdpPercap))
+```   
+這樣我就可以以每年為基準作分析且算出每年中位數和最大值唷   
+當然!group_by可以混著filter使用   
+```{r}
+gapminder %>%
+ filter(year==1957) %>%
+ group_by(continent) %>%
+ summarize(medianLifeExp=median(lifeExp),maxGdpPercap=max(gdpPercap))
+```   
+這樣我可以分析1957年每洲的資訊    
+你也可以一次group_by()很多東西    
+```{r}
+gapminder %>%
+group_by(continent,year) %>%
+summarize(medianLifeExp=median(lifeExp),maxGdpPercap=max(gdpPercap))
+```
+這樣我就可以看到每年各洲的情形了    
+Visualizing summarized data   
+我們先把整理好的資料指令起來，然後開始畫圖    
+```{r}
+by_year <- gapminder %>%
+  group_by(year) %>%
+  summarize(medianLifeExp = median(lifeExp),
+            maxGdpPercap = max(gdpPercap))
+ggplot(by_year, aes(x = year, y = medianLifeExp)) +
+  geom_point() +
+  expand_limits(y = 0)
+```   
+    
+請注意，如果要讓y值一開始是0，你必須加上expand_limits(y = 0)才行。    
+```{r}
+by_year_continent<- gapminder %>%
+group_by(year,continent) %>%
+summarize(medianGdpPercap=median(gdpPercap))
+ggplot(by_year_continent,aes(x=year,y=medianGdpPercap,color=continent)) +
+geom_point() +
+expand_limits(y = 0)
+```   
+    
+這張圖很完整呈現各洲中位數人均gdp的情況。  
+
+<h3 id = '3.4'></h3>
+##Types of visualizations   
+Line plots    
+把geom_point改成geom_line就是了   
+```{r}
+by_year_continent<-gapminder %>%
+group_by(year,continent) %>%
+summarize(medianGdpPercap=median(gdpPercap))
+ggplot(by_year_continent,aes(x=year,y=medianGdpPercap,color=continent))+
+geom_line()+
+expand_limits(y=0)
+```   
+    
+這樣可以看出不同洲中位數人均gdp歷年來的變化   
+Bar plots   
+把geom_point改成geom_col就是了    
+```{r}
+oceania_1952<-gapminder %>%
+filter(year==1952,continent=='Oceania')
+ggplot(oceania_1952,aes(x=country,y=gdpPercap))+
+geom_col()
+```   
+    
+這樣就是紐西蘭和澳洲人均gdp的長條圖了!    
+Histograms    
+把geom_point改成geom_histogram就是了    
+geom_histogram()括號裡面還可以加bindwith=數字   
+```{r}
+gapminder_1952 <- gapminder %>%
+  filter(year == 1952)
+ggplot(gapminder_1952,aes(x=pop))+
+geom_histogram()+
+scale_x_log10()
+```   
+    
+如果沒有cale_x_log10那一行程式碼，整張圖繪整個偏又且不易讀!   
+Boxplots    
+把geom_point改成geom_boxplot就是了    
+用lab()可以加標題title="xxx"    
+```{r}
+gapminder_1952 <- gapminder %>%
+  filter(year == 1952)
+ggplot(gapminder_1952, aes(x = continent, y = gdpPercap)) +
+  geom_boxplot() +
+  scale_y_log10()+
+  labs(title='Comparing GDP per capita across continents')
+```   
+    
+
+
+
