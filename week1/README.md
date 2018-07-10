@@ -10,6 +10,6 @@
 1. 做作業
 2. 看r語法教學影片
 3. 玩datacamp的r基本教學六大關
-
-
+4. 看完其他影片和寫完其他題目(爆肝)
 [課堂成果](https://icedragon5235.github.io/ntu-cs-x/week1/test.html)
+[作業成果](https://icedragon5235.github.io/ntu-cs-x/week1/hw1.html)
