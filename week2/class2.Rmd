@@ -1,0 +1,38 @@
+---
+title: "class2"
+author: "廖昱嘉"
+date: "2018年7月11日"
+output: html_document
+---
+## 套件安裝
+```{r}
+if(!require(tmcn))install.packages("tmcn",repos = "http://cran.us.r-project.org")
+if(!require(NLP))install.packages("NLP",repos = "http://cran.us.r-project.org")
+if(!require(tm))install.packages("tm",repos = "http://cran.us.r-project.org")
+if(!require(jiebaR))install.packages("jiebaR",repos = "http://cran.us.r-project.org")
+if(!require(jiebaRD))install.packages("jiebaRD",repos = "http://cran.us.r-project.org")
+if(!require(RColorBrewer))install.packages("RColorBrewer",repos = "http://cran.us.r-project.org")
+if(!require(wordcloud))install.packages("wordcloud",repos = "http://cran.us.r-project.org")
+if(!require(rvest))install.packages("rvest",repos = "http://cran.us.r-project.org")
+library(tmcn)
+library(NLP)
+library(tm)
+library(jiebaRD)
+library(jiebaR)
+library(RColorBrewer)
+library(wordcloud)
+library(rvest)
+```   
+## 網路爬蟲   
+```{r}
+source('pttTestFunction.R')
+id = c(39315:39320)
+URL = paste0("https://www.ptt.cc/bbs/Gossiping/index", id, ".html")
+filename = paste0(id, ".txt")
+mapply(pttTestFunction, 
+       URL = URL, filename = filename)
+```   
+## 文本清理   
+```{r}
+rm(list=ls(all.names = TRUE))
+```
