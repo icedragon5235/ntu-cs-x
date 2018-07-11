@@ -8,4 +8,6 @@
 學系:地理環境資源學系<br />
 ## Schedule
 ### WEEK1
-[第一周](https://github.com/icedragon5235/ntu-cs-x/blob/master/week1/README.md)
+[第一周](https://github.com/icedragon5235/ntu-cs-x/blob/master/week1/README.md)    
+### WEEK2
+[第二周](https://github.com/icedragon5235/ntu-cs-x/blob/master/week2/README.md)
