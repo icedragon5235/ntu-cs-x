@@ -24,6 +24,11 @@ output: html_document
     + [Data visualization](#3.2)
     + [Grouping and summarizing](#3.3)
     + [Types of visualizations](#3.4)
+* [Exploratory Data Analysis](#4)
+    + [Exploring Categorical Data](#4.1)
+    + [Exploring Numerical Data](#4.2)
+    + [Numerical Summaries](#4.3)
+    + [Case Study](#4.4)
 
 <h2 id = '1'></h2>
 # Introduction to R   
@@ -935,6 +940,168 @@ ggplot(gapminder_1952, aes(x = continent, y = gdpPercap)) +
   labs(title='Comparing GDP per capita across continents')
 ```   
     
+* [回目錄](#0)    
+
+<h2 id = '4'></h2>
+#Exploratory Data Analysis    
+
+<h3 id = '4.1'></h3>
+##Exploring Categorical Data    
+關鍵字:table,dropleveles,pipe,faceting(facet_wrap(~xxx)),piechart,levles(在factor()裡面)   
+<h3 id = '4.2'></h3>
+##Exploring Numerical Data    
+faceted histogram   
+ggplot(cars, aes(x = city_mpg)) +   
+  geom_histogram() +    
+  facet_wrap(~suv)    
+    
+boxplots and density plots    
+請熟悉%in%的用法    
+common_cyl <- filter(cars,ncyl %in% c(4,6,8))   
+ggplot(common_cyl, aes(x = as.factor(ncyl), y = city_mpg)) +    
+  geom_boxplot()    
+ggplot(common_cyl, aes(x =city_mpg, fill = as.factor(ncyl))) +    
+  geom_density(alpha = .3)    
+    
+Distribution of one variable    
+Marginal and conditional histograms   
+data pipeline的寫法!!!   
+也請注意xlim(c(90,550))的寫法   
+cars %>%    
+  ggplot(aes(x=horsepwr)) +   
+  geom_histogram() +    
+  ggtitle("horsepwr")   
+cars %>%    
+  filter(msrp<25000) %>%    
+  ggplot(aes(x=horsepwr)) +   
+  geom_histogram() +    
+  xlim(c(90, 550)) +    
+  ggtitle("horsepwr in price<25000")    
+    
+Three binwidths   
+The binwidth determines how smooth your distribution will appear: the smaller the binwidth, the more jagged your distribution becomes.    
+由以下三張圖就可以知道binwidth的效果了        
+cars %>%    
+  ggplot(aes(x=horsepwr)) +   
+  geom_histogram(binwidth = 3) +    
+  ggtitle("binwidth=3")   
+cars %>%    
+  ggplot(aes(x=horsepwr)) +   
+  geom_histogram(binwidth = 30) +   
+  ggtitle("binwidth=30")    
+cars %>%    
+  ggplot(aes(x=horsepwr)) +   
+  geom_histogram(binwidth = 60) +   
+  ggtitle("binwidth=60")    
+    
+Box plots   
+請注意寫法!!!與細節!!!    
+cars %>%    
+  ggplot(aes(x = 1, y = msrp)) +    
+  geom_boxplot()    
+cars_no_out <- cars %>%   
+  filter(msrp<100000)   
+cars_no_out %>%   
+  ggplot(aes(x=1,y=msrp))+    
+  geom_boxplot()    
+    
+在cars這資料中，city_mpg異常值比較多且廣，所以適合boxplot，而width這資料就比較適合density plot    
+cars %>%    
+  ggplot(aes(x=1,y=city_mpg)) +   
+  geom_boxplot()    
+cars %>%    
+  ggplot(aes(x=width)) +    
+  geom_density(alpha = .3)    
+    
+Visualization in higher dimensions    
+3 variable plot   
+請善用facet_grid(xxx~xxx)這寫法來創造多變量圖   
+common_cyl %>%    
+  ggplot(aes(x = hwy_mpg)) +    
+  geom_histogram() +    
+  facet_grid(ncyl ~ suv) +    
+  ggtitle("hwy_mpg in ncyl and suv")    
+    
+<h3 id = '4.3'></h3>
+## Numerical Summaries    
+
+Calculate center measures   
+以下以gapminder為例   
+```{r}
+gap2007 <- filter(gapminder, year == 2007)
+gap2007 %>%
+  group_by(continent) %>%
+  summarize(mean(lifeExp),
+            median(lifeExp))
+gap2007 %>%
+  ggplot(aes(x = continent, y = lifeExp)) +
+  geom_boxplot()
+```   
+    
+Calculate spread measures   
+關鍵函數:sd(),IQR(),diff(range(xxx)),var(),   
+```{r}
+gap2007 %>%
+  group_by(continent) %>%
+  summarize(sd(lifeExp),
+            IQR(lifeExp),
+            n())
+gap2007 %>%
+  ggplot(aes(x = lifeExp, fill = continent)) +
+  geom_density(alpha = 0.3)
+```   
+    
+重點比較:Like mean and standard deviation, median and IQR measure the central tendency and spread, respectively, but are robust to outliers and non-normal data.   
+
+Transformations   
+用log()讓圖更好看!    
+```{r}
+gap2007 %>%
+  ggplot(aes(x = pop)) +
+  geom_density(alpha=.3)
+gap2007 <- gap2007 %>%
+  mutate(log_pop=log(pop))
+gap2007 %>%
+  ggplot(aes(x = log_pop)) +
+  geom_density(alpha=.3)
+```   
+    
+identify outliers   
+```{r}
+gap_asia <- gap2007 %>%
+  filter(continent=="Asia") %>%
+  mutate(is_outlier = lifeExp<50)
+gap_asia %>%
+  filter(!is_outlier) %>%
+  ggplot(aes(x = 1, y = lifeExp)) +
+  geom_boxplot()
+```   
+    
+<h3 id = '4.4'></h3>
+## Case Study   
+以下以email這個data做例子   
+```{r}
+if(!require(openintro))install.packages("openintro",repos = "http://cran.us.r-project.org")
+library(ggplot2)
+library(openintro)
+library(dplyr)
+email %>%
+  group_by(spam) %>%
+  summarize(median(num_char),
+            IQR(num_char))
+email %>%
+  mutate(log_num_char = log(num_char)) %>%
+  ggplot(aes(x = spam, y = log_num_char)) +
+  geom_boxplot()
+```   
+    
+
+
+
+
+
+
+
 
 
 
