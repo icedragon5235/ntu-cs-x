@@ -28,7 +28,12 @@ output: html_document
     + [Exploring Categorical Data](#4.1)
     + [Exploring Numerical Data](#4.2)
     + [Numerical Summaries](#4.3)
-    + [Case Study](#4.4)
+    + [Case Study](#4.4)    
+* [Cleaning Data in R](#5)    
+    + [Introduction and exploring raw data](#5.1)
+    + [Tidying data](#5.2)
+    + [Preparing data for analysis](#5.3)
+    + [Putting it all together](#5.4)   
 
 <h2 id = '1'></h2>
 # Introduction to R   
@@ -1094,6 +1099,165 @@ email %>%
   ggplot(aes(x = spam, y = log_num_char)) +
   geom_boxplot()
 ```   
+    
+接下來請注意一個細節    
+如果log(0)在r會是個-inf   
+這樣會無法畫圖    
+所以可以加個.01   
+這樣就不會有問題了    
+```{r}
+email %>%
+  group_by(spam) %>%
+  summarize(median(exclaim_mess),
+            IQR(exclaim_mess))
+# Create plot for spam and exclaim_mess
+email %>%
+  mutate(log_exclaim_mess = log(exclaim_mess + .01)) %>%
+  ggplot(aes(x = log_exclaim_mess)) +
+  geom_histogram() +
+  facet_wrap(~ spam)
+# Alternative plot: side-by-side box plots
+email %>%
+  mutate(log_exclaim_mess = log(exclaim_mess + .01)) %>%
+  ggplot(aes(x = 1, y = log_exclaim_mess)) +
+  geom_boxplot() +
+  facet_wrap(~ spam)
+# Alternative plot: Overlaid density plots
+email %>%
+  mutate(log_exclaim_mess = log(exclaim_mess + .01)) %>%
+  ggplot(aes(x = log_exclaim_mess, fill = spam)) +
+  geom_density(alpha = 0.3)
+```   
+    
+Check-in 1    
+以下程式碼處理屬於image=0和>0的資料   
+```{r}
+# Create plot of proportion of spam by image
+email %>%
+  mutate(has_image = image>0) %>%
+  ggplot(aes(x =has_image, fill = spam)) +
+  geom_bar(position = "fill")
+```   
+    
+Check-in 2    
+```{r}
+email$number <- factor(email$number, levels = c("none", "small", "big"))
+ggplot(email, aes(x = number)) +
+  geom_bar() +
+  facet_wrap(~ spam)
+```   
+    
+* [回目錄](#0)    
+
+<h2 id = '5'></h2>
+# Cleaning Data in R    
+
+<h3 id = '5.1'></h3>
+## Introduction and exploring raw data    
+此大章節以下面三個流程展現:   
+1. Exploring raw data   
+2. Tidying data   
+3. Preparing data for analysis    
+以下幾個函數可以讓你在整理前隊整理的資料有初步了解:   
+1. class():class of data object   
+2. dim():dimensions of data   
+3. names():column names   
+4. str():preview of data with helpful details   
+5. glimpse():better version of str() from dplyr   
+6. summary():summary of data    
+以下幾個函數讓你先了解一下你的資料內容:   
+1. head():view top of dataset   
+2. tail():view bottom of dataset    
+3. print():view entire dataset(不建議)    
+4. hist():view histogram of a single variable   
+5. plot():view plot of two variables    
+    
+<h3 id = '5.2'></h3>
+##Tidying data    
+Principles of tidy data   
+1. Each observation forms a row, each variable forms a column, and each type of observational unit forms a table   
+2. Each value belongs to a variable and an observation    
+3. A dataset is a collection of values    
+以下三個是錯誤的資料整理例子:   
+1. Variables are stored in both rows and columns    
+2. Column headers are values, not variable names    
+3. A single observational unit is stored in multiple tables   
+Introduction to tidyer    
+以下介紹gather()和spread()這兩個互相相反又強大的函數    
+gather(data,key,value,...)    
+data: a data frame    
+key: bare name of new key column    
+value: bare name of new value column    
+...: bare names of columns to gather(or not)    
+spread(data,key,value)    
+data: a data frame    
+key: bare name of column containing keys    
+value: bare name of column containing values    
+Introduction to tidyr (part 2)    
+以下介紹separate()和unite()這兩個互相相反又強大的函數    
+separate(data,col,into)   
+data: a data frame    
+col: bare name of column to separate    
+into: character vector(注意) of new column names    
+unite(data,col,...)   
+data: a data frame    
+col:bare name of new column   
+...: bare names of columns to unite   
+要怎麼分跟怎麼和都用sep="你想要得符號"    
+統整    
+1.gather():Gather columns into key-value pairs    
+spread():Spread key-value pairs into columns    
+separate():Separate one column into multiple    
+unite():Unite multiple columns into one   
+
+<h3 id = '5.3'></h3>
+## Preparing data for analysis    
+type conversions    
+有很多種儲存形式，比如character,mumerical,integer,logical,factor以及date    
+善用class()來判別你的類型   
+善用as.xxx()來改變你資料的類型    
+注意!!!用lubridate這個package來把東西改變成date!!!    
+lubridate分成y,m,d,h,m,s(年月日時分秒)照著你看到的資料做變化，他會把你看到的資料變成統一規格    
+```{r}
+if(!require(lubridate))install.packages("lubridate",repos = "http://cran.us.r-project.org")
+library(lubridate)
+dmy("17 Sep 2015")
+mdy_hm("July 15, 2012 12:56")
+```   
+String manipulation   
+tolower()>全部轉小寫    
+toupper()>全部轉大寫    
+接下來要介紹四格強大函數    
+str_trim():trim leading and trailing white space    
+str_pad():pad with additional characters    
+str_detect():detect a pattern   
+str_replace():find and replace a pattern    
+```{r}
+if(!require(stringr))install.packages("stringr",repos = "http://cran.us.r-project.org")
+library(stringr)
+str_trim(c("   Filip ", "Nick  ", " Jonathan"))
+str_pad(c("23485W", "8823453Q", "994Z"),width=9,side="left",pad="0")
+```
+Missing and special values    
+is.na()TRUE代表他是NA資料   
+any(is.na())查出他是否有NA資料    
+sum(is.na())找出有幾個NA    
+summary()也可以看出有幾個NA   
+complete.cases()>find rows with no missing values   
+df[complete.cases(),]>suvbset data,keeping only complete cases    
+na.omit()>another way to remove rows with NAs   
+Outliers and obvious errors   
+summary()以及hist()這兩個函數使我們容易看見資料明顯的錯誤與偏差   
+boxplot()也是個好選擇   
+
+<h3 id = '5.4'></h3>
+## Putting it all together    
+which(is.na())看出哪幾項是NA    
+
+
+
+
+
     
 
 
