@@ -1,0 +1,98 @@
+---
+title: "class3"
+author: "廖昱嘉"
+date: "2018年7月18日"
+output: html_document
+---
+# Is happiness correlated with open data? 的EDA   
+## open data跟快樂指數有關嗎?   
+首先，先載入dplyr和把檔案讀進來    
+```{r}
+library(dplyr)
+open_data<-read.csv("C:/Users/user/Desktop/codingsite/ntu-cs-x/week3/countries.csv",stringsAsFactors=F)
+happiness<-read.csv("C:/Users/user/Desktop/codingsite/ntu-cs-x/week3/2015.csv",stringsAsFactors=F)
+```
+一般來講stringsAsFactors是默認為default.stringsAsFactors()，這裡我們要這些資料不要這樣，所以弄成F=FALSE   
+接下來把"country name"轉成"country"方便資料加入另一個資料(join)!     
+```{r}
+colnames(open_data)[2] <- "Country"
+```
+打開資料可以發現兩個資料名稱都有"country"了，可以開始join了!   
+```{r}
+open_data_happiness <- open_data %>%
+  left_join(happiness, by = "Country") %>%
+  mutate(Country = factor(Country)) %>%
+  select(Country, Region, X2015.Score, Happiness.Score, Economy..GDP.per.Capita., 
+         Family, Health..Life.Expectancy., Freedom, Trust..Government.Corruption., 
+         Generosity, Dystopia.Residual)
+```
+select()這東西使我們join的dataframe更乾淨，他只保留我們要的column!    
+接下來重新命名這些column names，增加易讀性    
+```{r}
+colnames(open_data_happiness) <- c("Country", "Region", "Openness", "Happiness", "GDP", "Family", "Health", "Freedom", "Trust", "Generosity", "DystopiaResidual")
+```
+安裝且載入formattable，開始找出前十名的opendata國家   
+```{r}
+if(!require(formattable))install.packages("formattable",repos = "http://cran.us.r-project.org")
+library(formattable)
+open_data_happiness %>%
+  arrange(desc(Openness)) %>%
+  mutate_each(funs(round(., 2)), -c(Country, Region, Openness)) %>%
+  head(10) %>%
+  formattable(list(
+    Openness = color_bar("yellow"),
+    Happiness = color_bar("lightgreen"),
+    GDP = color_bar("deepskyblue"),
+    Family = color_bar("deepskyblue"),
+    Health = color_bar("deepskyblue"),
+    Freedom = color_bar("deepskyblue"),
+    Trust = color_bar("deepskyblue"),
+    Generosity = color_bar("deepskyblue"),
+    DystopiaResidual = color_bar("deepskyblue")
+  ), align = "l")
+```
+從desc可以看出他是降冪排列(畢竟要從大到小找出最高的前十名)    
+mutate_each()那一行是要把所有數值變成小數點到第二位
+利用formattable()來畫出圖表   
+`mutate_each()` is deprecated.    
+Use `mutate_all()`, `mutate_at()` or `mutate_if()` instead.   
+To map `funs` over a selection of variables, use `mutate_at()`    
+接下來我們要探討這些open國家是否快樂    
+用圖表來呈現    
+```{r}
+if(!require(ggthemes))install.packages("ggthemes",repos = "http://cran.us.r-project.org")
+if(!require(viridis))install.packages("viridis",repos = "http://cran.us.r-project.org")
+library(ggplot2)
+library(ggthemes)
+library(viridis)
+ggplot(open_data_happiness, 
+  aes(x = Openness, 
+      y = Happiness)) +
+  geom_point(aes(colour = Region),
+             size = 2) +
+  geom_smooth(method="lm") +
+  labs(x = "Openness Score",
+       y = "Happiness Score",
+       title = "Are open data friendly countries happy countries?",
+       subtitle = "Data openness and happiness by country in 2015") +
+  scale_color_viridis(discrete = T) +
+  theme_minimal() +
+  theme(text = element_text(size=16))
+```
+labs()可以使我們對這張圖給標題和副標    
+從這張圖可以知道，快樂指數和資料開放度是呈正相關的(大部分國家)    
+接下來要看其他指數與資料開放度的關聯    
+```{r}
+if(!require(corrplot))install.packages("corrplot",repos = "http://cran.us.r-project.org")
+library(corrplot)
+open_data_corr <- open_data_happiness %>%
+  select(Openness, Happiness, GDP, Family, Health, 
+         Freedom, Trust, Generosity, DystopiaResidual) %>%
+  mutate(Openness = as.numeric(Openness))
+
+od_corr <- cor(open_data_corr, use = "complete", method = "pearson")
+
+corrplot(od_corr)
+```
+載入corrplot這個package畫出這種所有相關性的圖，corrplot()就可以畫出，點越大越藍相關性越大!    
+而要畫這張圖前需要select()自己想要比較的項目，再來因為先前把opennes這項目成為factor，所以要把他mutate()成numeric最後還要先用cor()來調整資料，最後才能畫出上面的圖。   
