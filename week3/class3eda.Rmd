@@ -1,23 +1,23 @@
 ---
 title: "class3"
-author: "¹ù¬R¹Å"
-date: "2018¦~7¤ë18¤é"
+author: "å»–æ˜±å˜‰"
+date: "2018å¹´7æœˆ18æ—¥"
 output: html_document
 ---
-# Is happiness correlated with open data? ªºEDA   
-## open data¸ò§Ö¼Ö«ü¼Æ¦³Ãö¶Ü?   
-­º¥ı¡A¥ı¸ü¤Jdplyr©M§âÀÉ®×Åª¶i¨Ó    
+# Is happiness correlated with open data? çš„EDA   
+## open dataè·Ÿå¿«æ¨‚æŒ‡æ•¸æœ‰é—œå—?   
+é¦–å…ˆï¼Œå…ˆè¼‰å…¥dplyrå’ŒæŠŠæª”æ¡ˆè®€é€²ä¾†    
 ```{r}
 library(dplyr)
 open_data<-read.csv("C:/Users/user/Desktop/codingsite/ntu-cs-x/week3/countries.csv",stringsAsFactors=F)
 happiness<-read.csv("C:/Users/user/Desktop/codingsite/ntu-cs-x/week3/2015.csv",stringsAsFactors=F)
 ```
-¤@¯ë¨ÓÁ¿stringsAsFactors¬OÀq»{¬°default.stringsAsFactors()¡A³o¸Ì§Ú­Ì­n³o¨Ç¸ê®Æ¤£­n³o¼Ë¡A©Ò¥H§Ë¦¨F=FALSE   
-±µ¤U¨Ó§â"country name"Âà¦¨"country"¤è«K¸ê®Æ¥[¤J¥t¤@­Ó¸ê®Æ(join)!     
+ä¸€èˆ¬ä¾†è¬›stringsAsFactorsæ˜¯é»˜èªç‚ºdefault.stringsAsFactors()ï¼Œé€™è£¡æˆ‘å€‘è¦é€™äº›è³‡æ–™ä¸è¦é€™æ¨£ï¼Œæ‰€ä»¥å¼„æˆF=FALSE   
+æ¥ä¸‹ä¾†æŠŠ"country name"è½‰æˆ"country"æ–¹ä¾¿è³‡æ–™åŠ å…¥å¦ä¸€å€‹è³‡æ–™(join)!     
 ```{r}
 colnames(open_data)[2] <- "Country"
 ```
-¥´¶}¸ê®Æ¥i¥Hµo²{¨â­Ó¸ê®Æ¦WºÙ³£¦³"country"¤F¡A¥i¥H¶}©ljoin¤F!   
+æ‰“é–‹è³‡æ–™å¯ä»¥ç™¼ç¾å…©å€‹è³‡æ–™åç¨±éƒ½æœ‰"country"äº†ï¼Œå¯ä»¥é–‹å§‹joinäº†!   
 ```{r}
 open_data_happiness <- open_data %>%
   left_join(happiness, by = "Country") %>%
@@ -26,12 +26,12 @@ open_data_happiness <- open_data %>%
          Family, Health..Life.Expectancy., Freedom, Trust..Government.Corruption., 
          Generosity, Dystopia.Residual)
 ```
-select()³oªF¦è¨Ï§Ú­Ìjoinªºdataframe§ó°®²b¡A¥L¥u«O¯d§Ú­Ì­nªºcolumn!    
-±µ¤U¨Ó­«·s©R¦W³o¨Çcolumn names¡A¼W¥[©öÅª©Ê    
+select()é€™æ±è¥¿ä½¿æˆ‘å€‘joinçš„dataframeæ›´ä¹¾æ·¨ï¼Œä»–åªä¿ç•™æˆ‘å€‘è¦çš„column!    
+æ¥ä¸‹ä¾†é‡æ–°å‘½åé€™äº›column namesï¼Œå¢åŠ æ˜“è®€æ€§    
 ```{r}
 colnames(open_data_happiness) <- c("Country", "Region", "Openness", "Happiness", "GDP", "Family", "Health", "Freedom", "Trust", "Generosity", "DystopiaResidual")
 ```
-¦w¸Ë¥B¸ü¤Jformattable¡A¶}©l§ä¥X«e¤Q¦Wªºopendata°ê®a   
+å®‰è£ä¸”è¼‰å…¥formattableï¼Œé–‹å§‹æ‰¾å‡ºå‰ååçš„opendataåœ‹å®¶   
 ```{r}
 if(!require(formattable))install.packages("formattable",repos = "http://cran.us.r-project.org")
 library(formattable)
@@ -51,14 +51,14 @@ open_data_happiness %>%
     DystopiaResidual = color_bar("deepskyblue")
   ), align = "l")
 ```
-±qdesc¥i¥H¬İ¥X¥L¬O­°¾­±Æ¦C(²¦³º­n±q¤j¨ì¤p§ä¥X³Ì°ªªº«e¤Q¦W)    
-mutate_each()¨º¤@¦æ¬O­n§â©Ò¦³¼Æ­ÈÅÜ¦¨¤p¼ÆÂI¨ì²Ä¤G¦ì
-§Q¥Îformattable()¨Óµe¥X¹Ïªí   
+å¾descå¯ä»¥çœ‹å‡ºä»–æ˜¯é™å†ªæ’åˆ—(ç•¢ç«Ÿè¦å¾å¤§åˆ°å°æ‰¾å‡ºæœ€é«˜çš„å‰åå)    
+mutate_each()é‚£ä¸€è¡Œæ˜¯è¦æŠŠæ‰€æœ‰æ•¸å€¼è®Šæˆå°æ•¸é»åˆ°ç¬¬äºŒä½
+åˆ©ç”¨formattable()ä¾†ç•«å‡ºåœ–è¡¨   
 `mutate_each()` is deprecated.    
 Use `mutate_all()`, `mutate_at()` or `mutate_if()` instead.   
 To map `funs` over a selection of variables, use `mutate_at()`    
-±µ¤U¨Ó§Ú­Ì­n±´°Q³o¨Çopen°ê®a¬O§_§Ö¼Ö    
-¥Î¹Ïªí¨Ó§e²{    
+æ¥ä¸‹ä¾†æˆ‘å€‘è¦æ¢è¨é€™äº›openåœ‹å®¶æ˜¯å¦å¿«æ¨‚    
+ç”¨åœ–è¡¨ä¾†å‘ˆç¾    
 ```{r}
 if(!require(ggthemes))install.packages("ggthemes",repos = "http://cran.us.r-project.org")
 if(!require(viridis))install.packages("viridis",repos = "http://cran.us.r-project.org")
@@ -79,9 +79,9 @@ ggplot(open_data_happiness,
   theme_minimal() +
   theme(text = element_text(size=16))
 ```
-labs()¥i¥H¨Ï§Ú­Ì¹ï³o±i¹Ïµ¹¼ĞÃD©M°Æ¼Ğ    
-±q³o±i¹Ï¥i¥Hª¾¹D¡A§Ö¼Ö«ü¼Æ©M¸ê®Æ¶}©ñ«×¬O§e¥¿¬ÛÃöªº(¤j³¡¤À°ê®a)    
-±µ¤U¨Ó­n¬İ¨ä¥L«ü¼Æ»P¸ê®Æ¶}©ñ«×ªºÃöÁp    
+labs()å¯ä»¥ä½¿æˆ‘å€‘å°é€™å¼µåœ–çµ¦æ¨™é¡Œå’Œå‰¯æ¨™    
+å¾é€™å¼µåœ–å¯ä»¥çŸ¥é“ï¼Œå¿«æ¨‚æŒ‡æ•¸å’Œè³‡æ–™é–‹æ”¾åº¦æ˜¯å‘ˆæ­£ç›¸é—œçš„(å¤§éƒ¨åˆ†åœ‹å®¶)    
+æ¥ä¸‹ä¾†è¦çœ‹å…¶ä»–æŒ‡æ•¸èˆ‡è³‡æ–™é–‹æ”¾åº¦çš„é—œè¯    
 ```{r}
 if(!require(corrplot))install.packages("corrplot",repos = "http://cran.us.r-project.org")
 library(corrplot)
@@ -94,5 +94,5 @@ od_corr <- cor(open_data_corr, use = "complete", method = "pearson")
 
 corrplot(od_corr)
 ```
-¸ü¤Jcorrplot³o­Ópackageµe¥X³oºØ©Ò¦³¬ÛÃö©Êªº¹Ï¡Acorrplot()´N¥i¥Hµe¥X¡AÂI¶V¤j¶VÂÅ¬ÛÃö©Ê¶V¤j!    
-¦Ó­nµe³o±i¹Ï«e»İ­nselect()¦Û¤v·Q­n¤ñ¸ûªº¶µ¥Ø¡A¦A¨Ó¦]¬°¥ı«e§âopennes³o¶µ¥Ø¦¨¬°factor¡A©Ò¥H­n§â¥Lmutate()¦¨numeric³Ì«áÁÙ­n¥ı¥Îcor()¨Ó½Õ¾ã¸ê®Æ¡A³Ì«á¤~¯àµe¥X¤W­±ªº¹Ï¡C   
+è¼‰å…¥corrploté€™å€‹packageç•«å‡ºé€™ç¨®æ‰€æœ‰ç›¸é—œæ€§çš„åœ–ï¼Œcorrplot()å°±å¯ä»¥ç•«å‡ºï¼Œé»è¶Šå¤§è¶Šè—ç›¸é—œæ€§è¶Šå¤§!    
+è€Œè¦ç•«é€™å¼µåœ–å‰éœ€è¦select()è‡ªå·±æƒ³è¦æ¯”è¼ƒçš„é …ç›®ï¼Œå†ä¾†å› ç‚ºå…ˆå‰æŠŠopennesé€™é …ç›®æˆç‚ºfactorï¼Œæ‰€ä»¥è¦æŠŠä»–mutate()æˆnumericæœ€å¾Œé‚„è¦å…ˆç”¨cor()ä¾†èª¿æ•´è³‡æ–™ï¼Œæœ€å¾Œæ‰èƒ½ç•«å‡ºä¸Šé¢çš„åœ–ã€‚   
