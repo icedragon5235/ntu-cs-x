@@ -1656,21 +1656,13 @@ unite():Unite multiple columns into one</p>
 lubridate分成y,m,d,h,m,s(年月日時分秒)照著你看到的資料做變化，他會把你看到的資料變成統一規格</p>
 <pre class="r"><code>if(!require(lubridate))install.packages(&quot;lubridate&quot;,repos = &quot;http://cran.us.r-project.org&quot;)</code></pre>
 <pre><code>## Loading required package: lubridate</code></pre>
-<pre><code>## Warning in library(package, lib.loc = lib.loc, character.only = TRUE,
-## logical.return = TRUE, : there is no package called 'lubridate'</code></pre>
-<pre><code>## Installing package into 'C:/Users/user/Documents/R/win-library/3.5'
-## (as 'lib' is unspecified)</code></pre>
-<pre><code>## package 'lubridate' successfully unpacked and MD5 sums checked
-## 
-## The downloaded binary packages are in
-##  C:\Users\user\AppData\Local\Temp\RtmpwlUVtL\downloaded_packages</code></pre>
-<pre class="r"><code>library(lubridate)</code></pre>
 <pre><code>## 
 ## Attaching package: 'lubridate'</code></pre>
 <pre><code>## The following object is masked from 'package:base':
 ## 
 ##     date</code></pre>
-<pre class="r"><code>dmy(&quot;17 Sep 2015&quot;)</code></pre>
+<pre class="r"><code>library(lubridate)
+dmy(&quot;17 Sep 2015&quot;)</code></pre>
 <pre><code>## [1] &quot;2015-09-17&quot;</code></pre>
 <pre class="r"><code>mdy_hm(&quot;July 15, 2012 12:56&quot;)</code></pre>
 <pre><code>## [1] &quot;2012-07-15 12:56:00 UTC&quot;</code></pre>
@@ -1711,6 +1703,9 @@ boxplot()也是個好選擇</p>
 <div id="putting-it-all-together" class="section level2">
 <h2>Putting it all together</h2>
 <p>which(is.na())看出哪幾項是NA</p>
+<ul>
+<li><a href="#0">回目錄</a></li>
+</ul>
 </div>
 </div>
 

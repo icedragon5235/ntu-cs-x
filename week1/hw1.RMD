@@ -1254,7 +1254,7 @@ boxplot()也是個好選擇
 ## Putting it all together    
 which(is.na())看出哪幾項是NA    
 
-
+* [回目錄](#0)    
 
 
 

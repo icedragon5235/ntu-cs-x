@@ -1,0 +1,27 @@
+---
+title: "class3afternoon"
+author: "廖昱嘉"
+date: "2018年7月18日"
+output: html_document
+---
+# PPT C_Chat分析   
+## 載入套件包
+```{r}
+if(!require(bitops))install.packages("bitops",repos = "http://cran.us.r-project.org")
+if(!require(httr))install.packages("httr",repos = "http://cran.us.r-project.org")
+if(!require(RCurl))install.packages("RCurl",repos = "http://cran.us.r-project.org")
+if(!require(XML))install.packages("XML",repos = "http://cran.us.r-project.org")
+if(!require(NLP))install.packages("NLP",repos = "http://cran.us.r-project.org")
+if(!require(tmcn))install.packages("tmcn",repos = "http://cran.us.r-project.org")
+if(!require(jiebaRD))install.packages("jiebaRD",repos = "http://cran.us.r-project.org")
+if(!require(jiebaR))install.packages("jiebaR",repos = "http://cran.us.r-project.org")
+library(bitops)
+library(httr)
+library(RCurl)
+library(XML)
+library(tm)
+library(NLP)
+library(tmcn)
+library(jiebaRD)
+library(jiebaR)
+```
