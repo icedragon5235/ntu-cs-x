@@ -8,5 +8,5 @@
 2. datacamp上學習
 3. 了解pca的繪圖意義(藉由 Articles - Principal Component Methods in R: Practical Guide)
 4. 了解kmeans繪圖意義(藉由 Example of K-Means Clustering with R)
-[上午任務成果](
-[下午任務成果](
+[上午任務成果](https://icedragon5235.github.io/ntu-cs-x/week3/class3eda.html)   
+[下午任務成果](https://icedragon5235.github.io/ntu-cs-x/week3/class3real.html)
