@@ -1,11 +1,11 @@
 ---
 title: "class3afternoon"
-author: "���R��"
-date: "2018�~7��18��"
+author: "廖昱嘉"
+date: "2018年7月18日"
 output: html_document
 ---
-# PPT C_Chat���R   
-## ���J�M��]
+# PPT C_Chat分析   
+## 載入套件包
 ```{r}
 if(!require(bitops))install.packages("bitops",repos = "http://cran.us.r-project.org")
 if(!require(httr))install.packages("httr",repos = "http://cran.us.r-project.org")
@@ -24,4 +24,126 @@ library(NLP)
 library(tmcn)
 library(jiebaRD)
 library(jiebaR)
+```
+## 網路爬蟲好後，分時段來儲存文章，開始進行資料清理   
+```{r}
+d.corpus <- Corpus( DirSource("./week3") )
+d.corpus <- tm_map(d.corpus, removePunctuation)
+d.corpus <- tm_map(d.corpus, removeNumbers)
+d.corpus <- tm_map(d.corpus, function(word) {
+  gsub("[A-Za-z0-9]", "", word)
+})
+
+```
+##進行斷詞，並依照時段建立文本矩陣    
+```{r}
+mixseg = worker()
+jieba_tokenizer = function(d)
+{
+  unlist( segment(d[[1]], mixseg) )
+}
+seg = lapply(d.corpus, jieba_tokenizer)
+
+count_token = function(d)
+{
+  as.data.frame(table(d))
+}
+tokens = lapply(seg, count_token)
+
+n = length(seg)
+TDM = tokens[[1]]
+colNames <- names(seg)
+colNames <- gsub(".txt", "", colNames)
+for( id in c(2:n) )
+{
+  TDM = merge(TDM, tokens[[id]], by="d", all = TRUE)
+  names(TDM) = c('d', colNames[1:id])
+}
+TDM[is.na(TDM)] <- 0
+library(knitr)
+kable(head(TDM))
+kable(tail(TDM))
+```   
+    
+## 將建好的TDM轉成TF-IDF   
+```{r}
+tf <- apply(as.matrix(TDM[,2:(n+1)]), 2, sum)
+
+library(Matrix)
+idfCal <- function(word_doc)
+{ 
+  log2( n / nnzero(word_doc) ) 
+}
+idf <- apply(as.matrix(TDM[,2:(n+1)]), 1, idfCal)
+
+doc.tfidf <- TDM
+# for(x in 1:nrow(TDM))
+# {
+#   for(y in 2:ncol(TDM))
+#   {
+#     doc.tfidf[x,y] <- (doc.tfidf[x,y] / tf[y]) * idf[x]
+#   }
+# }
+
+tempY = matrix(rep(c(as.matrix(tf)), each = length(idf)), nrow = length(idf))
+tempX = matrix(rep(c(as.matrix(idf)), each = length(tf)), ncol = length(tf), byrow = TRUE)
+doc.tfidf[,2:(n+1)] <- (doc.tfidf[,2:(n+1)] / tempY) * tempX
+
+stopLine = rowSums(doc.tfidf[,2:(n+1)])
+delID = which(stopLine == 0)
+
+kable(head(doc.tfidf[delID,1]))
+kable(tail(doc.tfidf[delID,1]))
+TDM = TDM[-delID,]
+doc.tfidf = doc.tfidf[-delID,]
+```
+## 從各小時的文章取得重要關鍵字   
+```{r}
+TopWords = data.frame()
+for( id in c(1:n) )
+{
+  dayMax = order(doc.tfidf[,id+1], decreasing = TRUE)
+  showResult = t(as.data.frame(doc.tfidf[dayMax[1:5],1]))
+  TopWords = rbind(TopWords, showResult)
+}
+rownames(TopWords) = colnames(doc.tfidf)[2:(n+1)]
+TopWords = droplevels(TopWords)
+kable(TopWords)
+```   
+    
+## 視覺化資料   
+```{r}
+TDM$d = as.character(TDM$d)
+AllTop = as.data.frame( table(as.matrix(TopWords)) )
+AllTop = AllTop[order(AllTop$Freq, decreasing = TRUE),]
+
+kable(head(AllTop))
+TopNo = 5
+tempGraph = data.frame()
+for( t in c(1:TopNo) )
+{
+  word = matrix( rep(c(as.matrix(AllTop$Var1[t])), each = n), nrow = n )
+  temp = cbind( colnames(doc.tfidf)[2:(n+1)], t(TDM[which(TDM$d == AllTop$Var1[t]), 2:(n+1)]), word )
+  colnames(temp) = c("hour", "freq", "words")
+  tempGraph = rbind(tempGraph, temp)
+  names(tempGraph) = c("hour", "freq", "words")
+}
+
+library(ggplot2)
+library(varhandle)
+tempGraph$freq = unfactor(tempGraph$freq)
+ggplot(tempGraph, aes(hour, freq)) + 
+  geom_point(aes(color = words, shape = words), size = 5) +
+  geom_line(aes(group = words, linetype = words))
+kable(tail(AllTop))
+```   
+    
+## 發文時間與發文量   
+```{r}
+filenames = as.array(paste0("./week3/",colnames(doc.tfidf)[2:(n+1)],".txt"))
+sizeResult = apply(filenames, 1, file.size) / 1024
+showSize = data.frame(colnames(doc.tfidf)[2:(n+1)], sizeResult)
+names(showSize) = c("hour", "size_KB")
+
+ggplot(showSize, aes(x = hour, y = size_KB)) + geom_bar(stat="identity")
 ```
