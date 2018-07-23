@@ -1,0 +1,82 @@
+---
+title: "Correlation and Regression"
+author: "廖昱嘉"
+date: "2018年7月21日"
+output: html_document
+---
+# Correlation and Regression    
+## Visualizing two variables    
+cut()(在aes裡面)函數可以使你指定的東西離散()中的breaks可以指定分成幾分(六區間分五breaks)    
+
+```{r}
+library(openintro)
+library(ggplot2)
+ggplot(data = mammals, aes(x = BodyWt, y = BrainWt)) +
+  geom_point() + 
+  coord_trans(x = "log10", y = "log10")
+ggplot(data = mammals, aes(x = BodyWt, y = BrainWt)) +
+  geom_point() +
+  scale_x_log10() + scale_y_log10()
+```   
+    
+## Correlation    
+Correlation絕對在1到-1之間，就以前高中數學講過的(你懂得)    
+想當然爾，他也有分強中弱    
+請注意以下的cor()函數和其中的use=xxx的用法    
+```{r}
+library(dplyr)
+mammals %>%
+  summarize(N = n(), r = cor(BodyWt, BrainWt))
+mammals %>%
+  summarize(N = n(), r = cor(BodyWt, BrainWt, use = "pairwise.complete.obs"))
+```
+Anscombe是個很神奇的東西他的set有1~4，會給你原本的圖表有不同成效    
+## Simple linear regression   
+The "best fit" line   
+geom_smooth()讓你畫出最棒的線，記得是lm喔   
+Note that geom_smooth() also takes an se argument that controls the standard error, which we will ignore for now.    
+```{r}
+ggplot(data = bdims, aes(x = hgt, y = wgt)) + 
+  geom_point() + 
+  geom_smooth(method = "lm", se = FALSE)
+```   
+    
+## Interpreting regression models   
+lm()這函數是這小節的關鍵    
+This function generally takes two arguments:    
+A formula that specifies the model    
+A data argument for the data frame that contains the data you want to use to fit the model    
+```{r}
+lm(wgt ~ hgt, data = bdims)
+lm(SLG~OBP,data=mlbBat10)
+lm(log(BodyWt)~log(BrainWt),data=mammals)
+```
+The coef() function displays only the values of the coefficients.     
+the summary() function displays not only that information, but a bunch of other information, including the associated standard error and p-value for each coefficient, the R2, adjusted R2, and the residual standard error.    
+Fitted values and residuals   
+we will confirm these two mathematical facts by accessing the fitted values and residuals with the     fitted.values() and residuals() functions, respectively, for the following model:   
+mod <- lm(wgt ~ hgt, data = bdims)    
+The augment() function from the broom package does exactly this. It takes a model object as an argument and returns a data frame that contains the data on which the model was fit, along with several quantities specific to the regression model, including the fitted values, residuals, leverage scores, and standardized residuals.   
+```{r}
+library(broom)
+```
+we will want to add regression lines to our scatterplot manually. To do this, we will use the geom_abline() function, which takes slope and intercept arguments. Naturally, we have to compute those values ahead of time, but we already saw how to do this (e.g. using coef()).    
+The coefs data frame contains the model estimates retrieved from coef(). Passing this to geom_abline() as the data argument will enable you to draw a straight line on your scatterplot.   
+## Model Fit    
+Standard error of residuals   
+(.resid),(.hat),(.cooksd)都是重要數學函數!跟分析資料有極大關係    
+Removing outliers   
+```{r}
+# Create nontrivial_players
+nontrivial_players<-mlbBat10%>%
+filter(AB>=10,OBP<0.500)
+# Fit model to new data
+mod_cleaner<-lm(SLG~OBP,nontrivial_players)
+# View model summary
+summary(mod_cleaner)
+# Visualize new model
+ggplot(nontrivial_players,aes(x=OBP,y=SLG))+
+geom_point()+
+geom_smooth(method="lm")
+```
+
