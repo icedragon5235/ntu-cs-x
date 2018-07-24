@@ -1,0 +1,187 @@
+---
+title: "Data Manipulation in R with dplyr"
+author: "廖昱嘉"
+date: "2018年7月23日"
+output: html_document
+---
+# Data Manipulation in R with dplyr   
+```{r}
+library(dplyr)
+library(hflights)
+head(hflights)
+lut <- c("AA" = "American", "AS" = "Alaska", "B6" = "JetBlue", "CO" = "Continental", 
+         "DL" = "Delta", "OO" = "SkyWest", "UA" = "United", "US" = "US_Airways", 
+         "WN" = "Southwest", "EV" = "Atlantic_Southeast", "F9" = "Frontier", 
+         "FL" = "AirTran", "MQ" = "American_Eagle", "XE" = "ExpressJet", "YV" = "Mesa")
+
+# Add the Carrier column to hflights
+hflights$Carrier <- lut[hflights$UniqueCarrier]
+```   
+A tbl (pronounced tibble) is just a special kind of data.frame. They make your data easier to look at, but also easier to work with.   
+以下介紹五個重要的dplyr函數   
+select(), which returns a subset of the columns,    
+select(df, var1, var2)    
+You can also use : to select a range of variables and - to exclude some variables, similar to indexing a data.frame with square brackets.    
+select(df, 1:4, -2)   
+select() does not change the data frame it is called on; you have to explicitly assign the result of select() to a variable to store the result.    
+```{r}
+head(select(hflights,ActualElapsedTime, AirTime, ArrDelay , DepDelay))
+head(select(hflights,Origin:Cancelled))
+head(select(hflights,1:21,-(DepTime:AirTime)))
+```
+Helper functions for variable selection   
+starts_with("X"): every name that starts with "X",    
+ends_with("X"): every name that ends with "X",    
+contains("X"): every name that contains "X",    
+matches("X"): every name that matches "X", where "X" can be a regular expression,   
+num_range("x", 1:5): the variables named x01, x02, x03, x04 and x05,    
+one_of(x): every name that appears in x, which should be a character vector.   
+```{r}
+head(select(hflights, ends_with("Delay")))
+head(select(hflights, UniqueCarrier, ends_with("Num"), starts_with("Cancel")))
+head(select(hflights, contains("Tim"), contains("Del")))
+```
+filter(), that is able to return a subset of the rows,    
+is.na() will also come in handy. This example keeps the observations in df for which the variable x is not NA:filter(df, !is.na(x))    
+```{r}
+head(filter(hflights,hflights$Distance>=3000))
+head(filter(hflights,UniqueCarrier %in% c("JetBlue", "Southwest", "Delta")))
+head(filter(hflights,TaxiIn + TaxiOut>hflights$AirTime))
+head(filter(hflights,DepTime<500|ArrTime>2200))
+head(filter(hflights, DepDelay>0&ArrDelay<0))
+head(filter(hflights, DepDelay>0&hflights$Cancelled==1))
+```
+arrange(), that reorders the rows according to single or multiple variables,    
+```{r}
+dtc <- filter(hflights, Cancelled == 1, !is.na(DepDelay))
+head(arrange(dtc,DepDelay))
+head(arrange(dtc,CancellationCode))
+head(arrange(dtc,UniqueCarrier,DepDelay))
+head(arrange(hflights, UniqueCarrier, desc(DepDelay)))
+head(arrange(hflights, DepDelay + ArrDelay))
+```
+mutate(), used to add columns from existing data,   
+mutate(df, z = x + y)   
+```{r}
+g1<-mutate(hflights,ActualGroundTime=ActualElapsedTime - AirTime)
+g2<-mutate(g1,GroundTime=TaxiIn + TaxiOut)
+g3<-mutate(g2,AverageSpeed=Distance / AirTime * 60)
+```
+你當然可以一次mutate很多個    
+```{r}
+m1 <- mutate(hflights, loss = ArrDelay - DepDelay,loss_ratio=loss/DepDelay)
+m2<-mutate(hflights,TotalTaxi=TaxiIn+TaxiOut,ActualGroundTime=ActualElapsedTime- AirTime,Diff=TotalTaxi-ActualGroundTime)
+```
+summarise(), which reduces each group to a single row by calculating aggregate measures.    
+```{r}
+summarise(hflights, min_dist = min(Distance), max_dist = max(Distance))
+summarise(filter(hflights, Diverted == 1), max_div = max(Distance))
+```
+Aggregate functions   
+min(x) - minimum value of vector x.   
+max(x) - maximum value of vector x.   
+mean(x) - mean value of vector x.   
+median(x) - median value of vector x.   
+quantile(x, p) - pth quantile of vector x.    
+sd(x) - standard deviation of vector x.   
+var(x) - variance of vector x.    
+IQR(x) - Inter Quartile Range (IQR) of vector x.    
+diff(range(x)) - total range of vector x.   
+```{r}
+# Remove rows that have NA ArrDelay: temp1
+temp1 <- filter(hflights, !is.na(ArrDelay))
+
+# Generate summary about ArrDelay column of temp1
+summarise(temp1, 
+          earliest = min(ArrDelay), 
+          average = mean(ArrDelay), 
+          latest = max(ArrDelay), 
+          sd = sd(ArrDelay))
+
+# Keep rows that have no NA TaxiIn and no NA TaxiOut: temp2
+temp2 <- filter(hflights, !is.na(TaxiIn), !is.na(TaxiOut))
+
+# Print the maximum taxiing difference of temp2 with summarise()
+summarise(temp2, max_taxi_diff = max(abs(TaxiIn - TaxiOut)))
+```
+first(x) - The first element of vector x.   
+last(x) - The last element of vector x.   
+nth(x, n) - The nth element of vector x.    
+n() - The number of rows in the data.frame or group of observations that summarise() describes.   
+n_distinct(x) - The number of unique values in vector x.    
+```{r}
+# Generate summarizing statistics for hflights
+summarise(hflights, 
+          n_obs = n(), 
+          n_carrier = n_distinct(UniqueCarrier), 
+          n_dest = n_distinct(Dest))
+
+# All American Airline flights
+aa <- filter(hflights, UniqueCarrier == "American")
+
+# Generate summarizing statistics for aa 
+summarise(aa, 
+          n_flights = n(), 
+          n_canc = sum(Cancelled == 1),
+          avg_delay = mean(ArrDelay, na.rm = TRUE))
+```
+Pipe!!!%>%
+```{r}
+hflights %>%
+mutate(diff=TaxiOut-TaxiIn) %>%
+filter(!is.na(diff)) %>%
+summarise(avg=mean(diff))
+
+hflights%>%
+mutate(RealTime=ActualElapsedTime + 100,mph=Distance/RealTime*60)%>%
+filter(!is.na(mph),mph<70)%>%
+summarise(n_less=n(),
+n_dest=n_distinct(Dest),
+min_dist=min(Distance),
+max_dist=max(Distance)
+)
+
+hflights %>%
+  mutate(RealTime = ActualElapsedTime + 100, mph = Distance / RealTime * 60)%>%
+  filter(mph<105|Cancelled==1|Diverted==1)%>%
+  summarise(
+  n_non=n(),
+  n_dest=n_distinct(Dest),
+  min_dist=min(Distance),
+  max_dist=max(Distance)
+  )
+
+hflights%>%
+filter(!is.na(DepTime),!is.na(ArrTime),DepTime>ArrTime)%>%
+summarise(num=n())
+```
+group_by()!!!
+```{r}
+hflights %>%
+  group_by(UniqueCarrier) %>%
+  summarise(p_canc = mean(Cancelled==1)*100,
+            avg_delay = mean(ArrDelay,na.rm=1)) %>%
+  arrange(avg_delay, p_canc)
+
+hflights%>%
+filter(!is.na(ArrDelay),ArrDelay>0)%>%
+group_by(UniqueCarrier)%>%
+summarise(avg=mean(ArrDelay))%>%
+mutate(rank=rank(avg))%>%
+arrange(rank)
+
+# How many airplanes only flew to one destination?
+hflights %>%
+  group_by(TailNum) %>%
+  summarise(ndest = n_distinct(Dest)) %>%
+  filter(ndest == 1) %>%
+  summarise(nplanes = n())
+
+# Find the most visited destination for each carrier
+hflights %>% 
+  group_by(UniqueCarrier, Dest) %>%
+  summarise(n = n()) %>%
+  mutate(rank = rank(desc(n))) %>%
+  filter(rank == 1)
+```
+

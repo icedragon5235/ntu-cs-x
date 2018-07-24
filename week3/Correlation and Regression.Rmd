@@ -78,5 +78,7 @@ summary(mod_cleaner)
 ggplot(nontrivial_players,aes(x=OBP,y=SLG))+
 geom_point()+
 geom_smooth(method="lm")
-```
+```   
+    
+
 
