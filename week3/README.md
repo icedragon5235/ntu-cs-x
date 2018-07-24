@@ -14,3 +14,4 @@
 [上午任務成果](https://icedragon5235.github.io/ntu-cs-x/week3/class3eda.html)   
 [下午任務成果](https://icedragon5235.github.io/ntu-cs-x/week3/class3real.html)    
 [Correlation and Regression筆記](https://icedragon5235.github.io/ntu-cs-x/week3/Correlation_and_Regression.html)
+[Data Manipulation in R with dplyr筆記](https://icedragon5235.github.io/ntu-cs-x/week3/Data_Manipulation_in_R_with_dplyr.html)
