@@ -1,0 +1,400 @@
+---
+title: "class3"
+author: "廖昱嘉"
+date: "2018年7月18日"
+output: html_document
+---
+# Is happiness correlated with open data? 的EDA   
+## open data跟快樂指數有關嗎?   
+首先，先載入dplyr和把檔案讀進來    
+```{r}
+library(dplyr)
+open_data<-read.csv("C:/Users/user/Desktop/codingsite/ntu-cs-x/week3/countries.csv",stringsAsFactors=F)
+happiness<-read.csv("C:/Users/user/Desktop/codingsite/ntu-cs-x/week3/2015.csv",stringsAsFactors=F)
+```
+一般來講stringsAsFactors是默認為default.stringsAsFactors()，這裡我們要這些資料不要這樣，所以弄成F=FALSE   
+接下來把"country name"轉成"country"方便資料加入另一個資料(join)!     
+```{r}
+colnames(open_data)[2] <- "Country"
+```
+打開資料可以發現兩個資料名稱都有"country"了，可以開始join了!   
+```{r}
+open_data_happiness <- open_data %>%
+  left_join(happiness, by = "Country") %>%
+  mutate(Country = factor(Country)) %>%
+  select(Country, Region, X2015.Score, Happiness.Score, Economy..GDP.per.Capita., 
+         Family, Health..Life.Expectancy., Freedom, Trust..Government.Corruption., 
+         Generosity, Dystopia.Residual)
+```
+select()這東西使我們join的dataframe更乾淨，他只保留我們要的column!    
+接下來重新命名這些column names，增加易讀性    
+```{r}
+colnames(open_data_happiness) <- c("Country", "Region", "Openness", "Happiness", "GDP", "Family", "Health", "Freedom", "Trust", "Generosity", "DystopiaResidual")
+```
+安裝且載入formattable，開始找出前十名的opendata國家   
+```{r}
+if(!require(formattable))install.packages("formattable",repos = "http://cran.us.r-project.org")
+library(formattable)
+open_data_happiness %>%
+  arrange(desc(Openness)) %>%
+  mutate_each(funs(round(., 2)), -c(Country, Region, Openness)) %>%
+  head(10) %>%
+  formattable(list(
+    Openness = color_bar("yellow"),
+    Happiness = color_bar("lightgreen"),
+    GDP = color_bar("deepskyblue"),
+    Family = color_bar("deepskyblue"),
+    Health = color_bar("deepskyblue"),
+    Freedom = color_bar("deepskyblue"),
+    Trust = color_bar("deepskyblue"),
+    Generosity = color_bar("deepskyblue"),
+    DystopiaResidual = color_bar("deepskyblue")
+  ), align = "l")
+```
+從desc可以看出他是降冪排列(畢竟要從大到小找出最高的前十名)    
+mutate_each()那一行是要把所有數值變成小數點到第二位
+利用formattable()來畫出圖表   
+`mutate_each()` is deprecated.    
+Use `mutate_all()`, `mutate_at()` or `mutate_if()` instead.   
+To map `funs` over a selection of variables, use `mutate_at()`    
+接下來我們要探討這些open國家是否快樂    
+用圖表來呈現    
+```{r}
+if(!require(ggthemes))install.packages("ggthemes",repos = "http://cran.us.r-project.org")
+if(!require(viridis))install.packages("viridis",repos = "http://cran.us.r-project.org")
+library(ggplot2)
+library(ggthemes)
+library(viridis)
+ggplot(open_data_happiness, 
+  aes(x = Openness, 
+      y = Happiness)) +
+  geom_point(aes(colour = Region),
+             size = 2) +
+  geom_smooth(method="lm") +
+  labs(x = "Openness Score",
+       y = "Happiness Score",
+       title = "Are open data friendly countries happy countries?",
+       subtitle = "Data openness and happiness by country in 2015") +
+  scale_color_viridis(discrete = T) +
+  theme_minimal() +
+  theme(text = element_text(size=16))
+```   
+    
+labs()可以使我們對這張圖給標題和副標    
+從這張圖可以知道，快樂指數和資料開放度是呈正相關的(大部分國家)    
+接下來要看其他指數與資料開放度的關聯    
+```{r}
+if(!require(corrplot))install.packages("corrplot",repos = "http://cran.us.r-project.org")
+library(corrplot)
+open_data_corr <- open_data_happiness %>%
+  select(Openness, Happiness, GDP, Family, Health, 
+         Freedom, Trust, Generosity, DystopiaResidual) %>%
+  mutate(Openness = as.numeric(Openness))
+
+od_corr <- cor(open_data_corr, use = "complete", method = "pearson")
+
+corrplot(od_corr)
+```
+載入corrplot這個package畫出這種所有相關性的圖，corrplot()就可以畫出，點越大越藍相關性越大!    
+而要畫這張圖前需要select()自己想要比較的項目，再來因為先前把opennes這項目成為factor，所以要把他mutate()成numeric最後還要先用cor()來調整資料，最後才能畫出上面的圖。    
+
+# 第四周的延伸    
+
+作者是比較開放度跟快樂指數的關係，我覺得開放指數應該跟人均gdp有關，所以先來畫人均gdp跟開放指數的關係吧!      
+```{r}
+ggplot(open_data_happiness, 
+  aes(x = Openness, 
+      y = GDP)) +
+  geom_point(aes(colour = Region),
+             size = 2) +
+  geom_smooth(method="lm") +
+  labs(x = "Openness Score",
+       y = "GDP per Capita",
+       title = "Are open data friendly countries high Gdp per Capita countries?",
+       subtitle = "Data openness and Gdp per Capita by country in 2015") +
+  scale_color_viridis(discrete = T) +
+  theme_minimal() +
+  theme(text = element_text(size=16))
+```   
+    
+再來確認他的correlation!!!
+```{r}
+library(dplyr)
+open_data_happiness %>%
+  filter(!is.na(GDP),!is.na(Openness))%>%
+  summarise(N=n(),r=cor(Openness,GDP))
+```
+0.4272795!他是正相關沒錯，可惜是只有0.4多而已，相關性並不強，所以我覺得他可能開放性跟人均gdp沒有太大關係，那或許openness跟國家的Trust (Government Corruption)有關???圖先畫了再說!   
+```{r}
+ggplot(open_data_happiness, 
+  aes(x = Openness, 
+      y = Trust)) +
+  geom_point(aes(colour = Region),
+             size = 2) +
+  geom_smooth(method="lm") +
+  labs(x = "Openness Score",
+       y = "Trust",
+       title = "Are open data friendly countries high Trust countries?",
+       subtitle = "Data openness and Trust by country in 2015") +
+  scale_color_viridis(discrete = T) +
+  theme_minimal() +
+  theme(text = element_text(size=16))
+```   
+    
+確認一下他的correlation!    
+```{r}
+open_data_happiness %>%
+  filter(!is.na(Trust),!is.na(Openness))%>%
+  summarise(N=n(),r=cor(Openness,Trust))
+```
+0.2819576!也是正相關，可惜更低了，所以政府信任度和資料開放度也不是我們要找的相關性高目標，接下來比較自由度與開放度的關係。    
+```{r}
+ggplot(open_data_happiness, 
+  aes(x = Openness, 
+      y = Freedom)) +
+  geom_point(aes(colour = Region),
+             size = 2) +
+  geom_smooth(method="lm") +
+  labs(x = "Openness Score",
+       y = "Freedom",
+       title = "Are open data friendly countries high Freedom countries?",
+       subtitle = "Data openness and Freedom by country in 2015") +
+  scale_color_viridis(discrete = T) +
+  theme_minimal() +
+  theme(text = element_text(size=16))
+```
+一樣確認他的correlation!    
+```{r}
+open_data_happiness %>%
+  filter(!is.na(Freedom),!is.na(Openness))%>%
+  summarise(N=n(),r=cor(Openness,Freedom))
+```
+0.3522194!也是正相關只是也沒有很高!   
+既然都沒有甚麼關係，那來從區域來分吧，看看哪區域的人比較快樂!   
+```{r}
+library(Hmisc)
+open_data_happiness %>%
+  filter(!is.na(Region))%>%
+  ggplot(aes(x=Region,y=Happiness))+
+  geom_jitter(width=0.1,alpha=0.3)+
+  stat_summary(geom="point",fun.y=mean,col="red")+
+  stat_summary(geom="errorbar",fun.data=mean_sdl,fun.args=list(mult=1),
+               width=0.2,col="red")+
+  labs(y="Happiness",title="Happiness&Region")+
+  theme(axis.title.y=element_blank())+
+  coord_flip()
+```   
+    
+再來做做看區域與人均gdp   
+```{r}
+open_data_happiness %>%
+  filter(!is.na(Region))%>%
+  ggplot(aes(x=Region,y=GDP))+
+  geom_jitter(width=0.1,alpha=0.3)+
+  stat_summary(geom="point",fun.y=mean,col="red")+
+  stat_summary(geom="errorbar",fun.data=mean_sdl,fun.args=list(mult=1),
+               width=0.2,col="red")+
+  labs(y="GDP",title="GDP&Region")+
+  theme(axis.title.y=element_blank())+
+  coord_flip()
+```   
+    
+發現兩張圖好像差不多，所以來做人均GDP跟快樂程度的關係圖   
+```{r}
+ggplot(open_data_happiness, 
+  aes(x = Happiness, 
+      y = GDP)) +
+  geom_point(aes(colour = Region),
+             size = 2) +
+  geom_smooth(method="lm") +
+  labs(x = "Happiness",
+       y = "GDP",
+       title = "Are high GDP countries happier countries?",
+       subtitle = "Data GDP and Happiness by country in 2015") +
+  scale_color_viridis(discrete = T) +
+  theme_minimal() +
+  theme(text = element_text(size=16))
+```   
+    
+再來算算他的correlation!    
+```{r}
+open_data_happiness %>%
+  filter(!is.na(GDP),!is.na(Happiness))%>%
+  summarise(N=n(),r=cor(GDP,Happiness))
+```   
+高達將近0.8!!!可見人均gdp越高國家越快樂...    
+```{r}
+choose<-open_data_happiness%>%
+  filter(Region=="Western Europe"|Region=="Australia and New Zealand")
+t.test(GDP~Region,data=choose)
+t.test(Happiness~Region,data=choose)
+```   
+圖上這兩區都是過很爽(人均gdp高，快樂指數高)的地區，而經過t-test的檢驗，他們兩區的差異度並不大，非常的相近!!!   
+接下來做做anova
+```{r}
+anova(m1<-lm(Openness~Region,data=open_data_happiness))
+```
+3.129e-06<0.05所以各組平均值有明顯差異!!!
+```{r}
+anova(m2<-lm(Happiness~Region,data=open_data_happiness))
+```
+2.2e-16<0.05所以各組平均值有明顯差異!!!   
+```{r}
+anova(m3<-lm(GDP~Region,data=open_data_happiness))
+```
+2.2e-16<0.05所以各組平均值有明顯差異!!!   
+接下來來做回歸直線    
+先來把區域跟gdp做點計算
+```{r}
+library(coefplot)
+open_data_happiness <-filter(open_data_happiness,!is.na(Region))
+open_data_happiness$Region<-factor(open_data_happiness$Region,
+                                   levels=c("Western Europe",
+                                            "North America",
+                                            "Australia and New Zealand",
+                                            "Middle East and Northern Africa",
+                                            "Latin America and Caribbean",
+                                            "Central and Eastern Europe",
+                                            "Southeastern Asia",
+                                            "Eastern Asia",
+                                            "Sub-Saharan Africa",
+                                            "Southern Asia"
+                                   ))
+tapply(open_data_happiness$GDP, open_data_happiness$Region, mean)
+```
+接下來畫畫看同區域的gdp，加上信賴區間   
+```{r}
+ggplot(data = open_data_happiness, 
+       aes(x = Region, y = open_data_happiness$GDP)) +
+  stat_summary(fun.data = 'mean_cl_boot', size = 1) +
+  geom_hline(yintercept = mean(open_data_happiness$GDP) , 
+             linetype = 'dotted') +
+  labs(x = '地區', y = '平均GDP') +
+  coord_flip()
+```   
+    
+猜測GDP在各區是因為跟快樂指數有關   
+```{r}
+ggplot(data = open_data_happiness, 
+       aes(group = Region, 
+          y = GDP, x = Happiness)) +
+  geom_point() +
+  stat_smooth(method = 'lm', se = F) +
+  stat_smooth(aes(group = Region, 
+          y = GDP, x =  Happiness), 
+          method = 'lm', se = F) + 
+  facet_grid( . ~  Region) +
+  labs(x = '快樂指數', y = 'GDP')
+```
+正式開始畫圖囉~~~   
+```{r}
+m2 <- lm(GDP ~ Region+Happiness- 1, 
+         data = open_data_happiness)
+coefplot(m2, xlab = '估計值', ylab = '迴歸變項', title = '反應變項 = GDP')
+```   
+    
+把資料與迴歸分析的預測值、殘差與影響度放進資料    
+```{r}
+fit_m2 <- data.frame(open_data_happiness[, c("Region","GDP", "Happiness")], fitted = fitted(m2), resid = resid(m2),
+                     infl = influence(m2)$hat )
+```
+依地區疊合真實觀測值與預測值    
+```{r}
+ggplot(data = fit_m2, aes(x = GDP, group = Region )) +
+ stat_density(geom = 'path', position = 'identity') +
+ stat_density(geom = 'path', position = 'identity', aes(x = fitted)) +
+ geom_vline(xintercept = c(with(open_data_happiness, tapply(GDP,Region, mean))), linetype = 'dotted')+
+ facet_grid(Region ~ .) +
+ labs(x = 'GDP', y = '機率密度')
+```   
+    
+看殘差分配，依快樂指數，檢視常態與變異數同質假設
+```{r}
+ggplot(data = fit_m2, aes(x = scale(resid)), group = Region ) +
+ stat_density(geom = 'path', position = 'identity', aes(linetype = Region)) +
+ scale_linetype_manual(values = 10:1) +
+ guides(linetype = guide_legend(reverse = TRUE)) +
+ labs(x = '標準化殘差', y = '機率密度') +
+ theme(legend.position = c(.15, .8))
+```   
+    
+看看殘差的 Q-Q 圖，依快樂指數。檢視常態假設
+```{r}
+require(lattice)
+qqmath(~ scale(resid) | Region, data = fit_m2, type = c('p', 'g', 'r'),
+       xlab = '常態位數', ylab = '標準化殘差', layout = c(2, 3),
+       pch = '.', cex = 2)
+```   
+    
+畫預測值與殘差的散佈圖，檢查線性與等分散假設
+```{r}
+library(ggplot2)
+require(MASS)
+ggplot(data = fit_m2, aes(x = fitted, y = scale(resid), group = Region )) +
+  geom_point(pch = 20, size = 1) +
+  stat_smooth(method = 'rlm', se = F) +
+  facet_grid(Region ~ .) +
+  labs(x = '數學預測值', y = '標準化殘差')
+```   
+    
+呈現影響值（影響估計結果過大的值）與標準化殘差
+```{r}
+ggplot(data = fit_m2, aes(x = infl, y = scale(resid), group = Region)) +
+ geom_text(aes(label = rownames(fit_m2)), cex = 2) +
+ geom_hline(yintercept = 0, linetype = 'dotted') +
+ facet_grid(Region ~ .) +
+ labs(x = '影響值', y = '標準化殘差')
+```   
+    
+看看影響值
+```{r}
+summary(influence(m2)$hat)
+```
+接下來分析資料集當中的其他變項是否和GDP有關
+```{r}
+open_data_happiness_gdp<-open_data_happiness[,c("GDP","Happiness","Openness","Freedom","Trust","Health")]
+```
+看看基本統計量
+```{r}
+colMeans(open_data_happiness_gdp)
+```
+呈現兩兩散佈圖
+```{r}
+require(heplots)
+scatterplotMatrix(~ GDP + Happiness + Openness + Freedom+Trust+Health, data= open_data_happiness_gdp,
+  pch = '.', cex = 3, smooth = FALSE, reg.line = FALSE, ellipse = TRUE,
+  diagonal = 'none', lower.panel = NULL)
+```   
+    
+我們利用corrplot 套件，以圖形顯示相關性的大小
+```{r}
+require(corrplot)
+corrplot(cor(open_data_happiness_gdp), method = 'ellipse', order = 'hclust', addrect = 6,
+         type = 'upper', tl.pos = 'tp')
+corrplot(cor(open_data_happiness_gdp), add = TRUE, type = 'lower', method = 'number',
+         order = 'hclust', col = 'black', diag = FALSE, tl.pos = 'n', cl.pos = 'n')
+```   
+    
+放進五個解釋變項
+```{r}
+summary(m4 <- lm(GDP ~ Happiness + Openness + Freedom+Trust+Health, data = open_data_happiness_gdp))
+```
+畫圖看成效    
+```{r}
+require(effects)
+plot(allEffects(m4), main = '', grid = T)
+```   
+    
+從這幾張圖跟前面幾張圖，都可以了解到跟gdp最有關連的都是快樂指數和健康指數，他們的正相關性都非常高(0.8以上)，其他(開放度、政府信任度、自由度)不但相關性低，還有呈現負相關的，可見其他這三個可能都跟gdp沒有太大的關係。    
+利用 lm.beta 套件，計算標準化迴歸係數   
+```{r}
+library(lm.beta)
+summary(lm.beta(m4))
+```   
+看看控制其他(開放度 政府信任度 自由度)因素後，gdp的效果   
+```{r}
+summary(m5 <- update(m4, . ~ . -Openness- Freedom -Trust , data = open_data_happiness_gdp))
+anova(m5, m4)
+```
+總結:   
+從第三周的作業，可以知道快樂指數是和開放度有關的，雖然他的correlation是正相關沒錯，但非常的低，而第四周的各種畫圖與計算，可以發現，真正與快樂指數最相關的其實是GDP啊!!!尤其是大洋洲兩國(澳洲、紐西蘭)和西歐區，他們都過得很爽(gdp高快樂指數高健康指數高)，而近一步從多個變數(政府開放度、信任度...)可以發現gdp總是跟快樂指數和健康指數成高度正相關(0.8左右)，再輔以回歸線佐證，我們可以發現這三者是非常有關連的，因此從這次的分析，我得出結論，gdp高的地區往往會更快樂與更健康。   
