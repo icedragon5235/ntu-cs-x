@@ -13,3 +13,5 @@
 [第二周](https://github.com/icedragon5235/ntu-cs-x/blob/master/week2/README.md)
 ### WEEK3
 [第三周](https://github.com/icedragon5235/ntu-cs-x/blob/master/week3/README.md)
+### WEEK4   
+[第四周](https://github.com/icedragon5235/ntu-cs-x/blob/master/week4/README.md)
