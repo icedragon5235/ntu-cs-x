@@ -10,4 +10,4 @@
 2. 學爬蟲!!!!!!!!!!!!!!!!!   
 3. 試著爬蟲爬ptt八卦版文章    
 4. 討論第六周成果展現要展現啥    
-[第四周作業，有寫結論，前半段是第三周的上午作業，後面是你們說的延伸](https://icedragon5235.github.io/ntu-cs-x/week4/class4.html)
+[第四周作業，有寫結論，前半段是第三周的上午作業，後面是你們說的延伸](https://icedragon5235.github.io/ntu-cs-x/week4/class4eda.html)
