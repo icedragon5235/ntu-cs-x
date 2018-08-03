@@ -1,0 +1,12 @@
+name: firstshiny
+title: firstshiny
+username:
+account: icedragon5235
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 393043
+bundleId: 1511043
+url: https://icedragon5235.shinyapps.io/firstshiny/
+when: 1533106875.50218
+asMultiple: FALSE
+asStatic: FALSE

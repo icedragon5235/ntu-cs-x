@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1533105192520.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "F23092F9",
+    "lastKnownWriteTime" : 1526421858,
+    "last_content_update" : 1526421858,
+    "path" : "C:/Users/user/Desktop/codingsite/ntu-cs-x/week5/firstshiny/app.R",
+    "project_path" : "app.R",
+    "properties" : {
+        "cursorPosition" : "10,0",
+        "scrollLine" : "0"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
