@@ -16,4 +16,5 @@
 ### WEEK4   
 [第四周](https://github.com/icedragon5235/ntu-cs-x/blob/master/week4/README.md)    
 ### Final Project
-[最終成果](https://bourbon0212.shinyapps.io/Youbike/)
+[最終成果](https://bourbon0212.shinyapps.io/Youbike/)   
+[ppt](https://github.com/icedragon5235/ntu-cs-x/blob/master/final%20project/%E6%9A%91%E5%81%87%E5%A0%B1%E5%91%8Appt.pptx)
